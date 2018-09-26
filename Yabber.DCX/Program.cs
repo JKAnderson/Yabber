@@ -1,0 +1,101 @@
+﻿using SoulsFormats;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Xml;
+
+namespace Yabber
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            if (args.Length == 0)
+            {
+                Console.WriteLine(
+                    "Yabber.DCX has no GUI.\n" +
+                    "Drag and drop a DCX onto the exe to decompress it,\n" +
+                    "or a decompressed file to recompress it.\n\n" +
+                    "Yabber.DCX version: " + Assembly.GetExecutingAssembly().GetName().Version + "\n" +
+                    "Press any key to exit."
+                    );
+                Console.ReadKey();
+                return;
+            }
+
+            bool pause = false;
+
+            foreach (string path in args)
+            {
+                try
+                {
+                    if (Path.GetExtension(path) == ".dcx")
+                    {
+                        pause |= Decompress(path);
+                    }
+                    else
+                    {
+                        pause |= Compress(path);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unhandled exception: {ex}");
+                    pause = true;
+                }
+
+                Console.WriteLine();
+            }
+
+            if (pause)
+            {
+                Console.WriteLine("One or more errors were encountered and displayed above.\nPress any key to exit.");
+                Console.ReadKey();
+            }
+        }
+
+        private static bool Decompress(string sourceFile)
+        {
+            Console.WriteLine($"Decompressing DCX: {Path.GetFileName(sourceFile)}...");
+
+            string sourceDir = Path.GetDirectoryName(sourceFile);
+            string outPath = $"{sourceDir}\\{Path.GetFileNameWithoutExtension(sourceFile)}";
+            byte[] bytes = DCX.Decompress(sourceFile, out DCX.Type compression);
+            File.WriteAllBytes(outPath, bytes);
+
+            XmlWriterSettings xws = new XmlWriterSettings();
+            xws.Indent = true;
+            XmlWriter xw = XmlWriter.Create($"{outPath}-yabber-dcx.xml", xws);
+
+            xw.WriteStartElement("dcx");
+            xw.WriteElementString("compression", compression.ToString());
+            xw.WriteEndElement();
+            xw.Close();
+
+            return false;
+        }
+
+        private static bool Compress(string path)
+        {
+            string xmlPath = $"{path}-yabber-dcx.xml";
+            if (!File.Exists(xmlPath))
+            {
+                Console.WriteLine($"XML file not found: {xmlPath}");
+                return true;
+            }
+
+            Console.WriteLine($"Compressing file: {Path.GetFileName(path)}...");
+            XmlDocument xml = new XmlDocument();
+            xml.Load(xmlPath);
+            Enum.TryParse(xml.SelectSingleNode("dcx/compression").InnerText, out DCX.Type compression);
+
+            string outPath = path + ".dcx";
+            if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
+                File.Move(outPath, outPath + ".bak");
+
+            DCX.Compress(File.ReadAllBytes(path), compression, path + ".dcx");
+
+            return false;
+        }
+    }
+}
