@@ -13,7 +13,7 @@ namespace Yabber
             Directory.CreateDirectory(targetDir);
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.Indent = true;
-            XmlWriter xw = XmlWriter.Create($"{targetDir}\\yabber-bnd3.xml", xws);
+            XmlWriter xw = XmlWriter.Create($"{targetDir}\\_yabber-bnd3.xml", xws);
             xw.WriteStartElement("bnd3");
 
             xw.WriteElementString("filename", sourceName);
@@ -50,7 +50,7 @@ namespace Yabber
         {
             BND3 bnd = new BND3();
             XmlDocument xml = new XmlDocument();
-            xml.Load($"{sourceDir}\\yabber-bnd3.xml");
+            xml.Load($"{sourceDir}\\_yabber-bnd3.xml");
 
             string filename = xml.SelectSingleNode("bnd3/filename").InnerText;
             Enum.TryParse(xml.SelectSingleNode("bnd3/compression").InnerText, out bnd.Compression);

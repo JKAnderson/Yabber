@@ -11,7 +11,7 @@ namespace Yabber
             Directory.CreateDirectory(targetDir);
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.Indent = true;
-            XmlWriter xw = XmlWriter.Create($"{targetDir}\\yabber-bxf3.xml", xws);
+            XmlWriter xw = XmlWriter.Create($"{targetDir}\\_yabber-bxf3.xml", xws);
             xw.WriteStartElement("bxf3");
 
             xw.WriteStartElement("bhd");
@@ -49,7 +49,7 @@ namespace Yabber
         {
             BXF3 bxf = new BXF3();
             XmlDocument xml = new XmlDocument();
-            xml.Load($"{sourceDir}\\yabber-bxf3.xml");
+            xml.Load($"{sourceDir}\\_yabber-bxf3.xml");
 
             string bhdFilename = xml.SelectSingleNode("bxf3/bhd/filename").InnerText;
             bxf.BHDTimestamp = xml.SelectSingleNode("bxf3/bhd/timestamp").InnerText;

@@ -16,7 +16,7 @@ namespace Yabber
             Directory.CreateDirectory(targetDir);
             XmlWriterSettings xws = new XmlWriterSettings();
             xws.Indent = true;
-            XmlWriter xw = XmlWriter.Create($"{targetDir}\\yabber-bxf4.xml", xws);
+            XmlWriter xw = XmlWriter.Create($"{targetDir}\\_yabber-bxf4.xml", xws);
             xw.WriteStartElement("bxf4");
 
             xw.WriteStartElement("bhd");
@@ -65,7 +65,7 @@ namespace Yabber
         {
             BXF4 bxf = new BXF4();
             XmlDocument xml = new XmlDocument();
-            xml.Load($"{sourceDir}\\yabber-bxf4.xml");
+            xml.Load($"{sourceDir}\\_yabber-bxf4.xml");
 
             string bhdFilename = xml.SelectSingleNode("bxf4/bhd/filename").InnerText;
             bxf.BHD.Timestamp = xml.SelectSingleNode("bxf4/bhd/timestamp").InnerText;
@@ -88,10 +88,10 @@ namespace Yabber
                 int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
                 string name = fileNode.SelectSingleNode("name").InnerText;
                 string path = fileNode.SelectSingleNode("path").InnerText;
-                byte format = Convert.ToByte(fileNode.SelectSingleNode("format").InnerText, 16);
+                byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bxf.Files.Add(new BXF4.File(id, name, format, bytes));
+                bxf.Files.Add(new BXF4.File(id, name, flags, bytes));
             }
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";

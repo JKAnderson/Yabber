@@ -12,15 +12,16 @@ namespace Yabber
             if (args.Length == 0)
             {
                 Console.WriteLine(
-                    "Yabber has no GUI.\n" +
-                    "Drag and drop a file onto the exe to unpack it,\n" +
-                    "or an unpacked folder to repack it.\n\n" +
-                    "DCX files will be transparently decompressed and recompressed;\n" +
-                    "If you need to decompress or recompress an unsupported format,\n" +
-                    "use Yabber.DCX.exe instead.\n\n" +
-                    "Yabber version: " + Assembly.GetExecutingAssembly().GetName().Version + "\n" +
-                    "Supported formats: BND3, BND4, BXF3, BXF4\n" +
-                    "Press any key to exit."
+                    "\n" +
+                    " Yabber has no GUI.\n" +
+                    " Drag and drop a file onto the exe to unpack it,\n" +
+                    " or an unpacked folder to repack it.\n\n" +
+                    " DCX files will be transparently decompressed and recompressed;\n" +
+                    " If you need to decompress or recompress an unsupported format,\n" +
+                    " use Yabber.DCX.exe instead.\n\n" +
+                    " Yabber version: " + Assembly.GetExecutingAssembly().GetName().Version + "\n" +
+                    " Supported formats: BND3, BND4, BXF3, BXF4\n" +
+                    " Press any key to exit."
                     );
                 Console.ReadKey();
                 return;
@@ -152,22 +153,22 @@ namespace Yabber
         {
             string sourceName = new DirectoryInfo(sourceDir).Name;
             string targetDir = new DirectoryInfo(sourceDir).Parent.FullName;
-            if (File.Exists($"{sourceDir}\\yabber-bnd3.xml"))
+            if (File.Exists($"{sourceDir}\\_yabber-bnd3.xml"))
             {
                 Console.WriteLine($"Repacking BND3: {sourceName}...");
                 YBND3.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\yabber-bnd4.xml"))
+            else if (File.Exists($"{sourceDir}\\_yabber-bnd4.xml"))
             {
                 Console.WriteLine($"Repacking BND4: {sourceName}...");
                 YBND4.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\yabber-bxf3.xml"))
+            else if (File.Exists($"{sourceDir}\\_yabber-bxf3.xml"))
             {
                 Console.WriteLine($"Repacking BXF3: {sourceName}...");
                 YBXF3.Repack(sourceDir, targetDir);
             }
-            else if (File.Exists($"{sourceDir}\\yabber-bxf4.xml"))
+            else if (File.Exists($"{sourceDir}\\_yabber-bxf4.xml"))
             {
                 Console.WriteLine($"Repacking BXF4: {sourceName}...");
                 YBXF4.Repack(sourceDir, targetDir);
