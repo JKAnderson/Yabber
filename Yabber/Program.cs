@@ -20,7 +20,7 @@ namespace Yabber
                     " If you need to decompress or recompress an unsupported format,\n" +
                     " use Yabber.DCX.exe instead.\n\n" +
                     " Yabber version: " + Assembly.GetExecutingAssembly().GetName().Version + "\n" +
-                    " Supported formats: BND3, BND4, BXF3, BXF4\n" +
+                    " Supported formats: BND3, BND4, BXF3, BXF4, TPF\n" +
                     " Press any key to exit."
                     );
                 Console.ReadKey();
@@ -67,7 +67,7 @@ namespace Yabber
         {
             string sourceDir = Path.GetDirectoryName(sourceFile);
             string filename = Path.GetFileName(sourceFile);
-            string targetDir = $"{sourceDir}\\{filename.Replace('.', '-')}";
+            string targetDir = $"{sourceDir}\\{filename}.yabber";
             if (DCX.Is(sourceFile))
             {
                 Console.WriteLine($"Decompressing DCX: {filename}...");
@@ -85,6 +85,13 @@ namespace Yabber
                     BND4 bnd = BND4.Read(bytes);
                     bnd.Compression = compression;
                     bnd.Unpack(filename, targetDir);
+                }
+                else if (TPF.Is(bytes))
+                {
+                    Console.WriteLine($"Unpacking TPF: {filename}...");
+                    TPF tpf = TPF.Read(bytes);
+                    tpf.Compression = compression;
+                    tpf.Unpack(filename, targetDir);
                 }
                 else
                 {
@@ -140,6 +147,12 @@ namespace Yabber
                         return true;
                     }
                 }
+                else if (TPF.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking TPF: {filename}...");
+                    TPF tpf = TPF.Read(sourceFile);
+                    tpf.Unpack(filename, targetDir);
+                }
                 else
                 {
                     Console.WriteLine($"File format not recognized: {filename}");
@@ -172,6 +185,11 @@ namespace Yabber
             {
                 Console.WriteLine($"Repacking BXF4: {sourceName}...");
                 YBXF4.Repack(sourceDir, targetDir);
+            }
+            else if (File.Exists($"{sourceDir}\\_yabber-tpf.xml"))
+            {
+                Console.WriteLine($"Repacking TPF: {sourceName}...");
+                YTPF.Repack(sourceDir, targetDir);
             }
             else
             {
