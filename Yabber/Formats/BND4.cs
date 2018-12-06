@@ -29,18 +29,18 @@ namespace Yabber
             xw.WriteStartElement("files");
             foreach (BND4.File file in bnd.Files)
             {
-                string outPath = Util.UnrootBNDPath(file.Name);
+                string path = YBUtil.UnrootBNDPath(file.Name, out string root);
 
                 xw.WriteStartElement("file");
                 xw.WriteElementString("id", file.ID.ToString());
-                xw.WriteElementString("name", file.Name);
-                xw.WriteElementString("path", outPath);
+                xw.WriteElementString("root", root);
+                xw.WriteElementString("path", path);
                 xw.WriteElementString("flags", $"0x{file.Flags:X2}");
                 xw.WriteEndElement();
 
-                outPath = $"{targetDir}\\{outPath}";
-                Directory.CreateDirectory(Path.GetDirectoryName(outPath));
-                File.WriteAllBytes(outPath, file.Bytes);
+                path = $"{targetDir}\\{path}";
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                File.WriteAllBytes(path, file.Bytes);
             }
             xw.WriteEndElement();
 
@@ -67,13 +67,13 @@ namespace Yabber
             foreach (XmlNode fileNode in xml.SelectNodes("bnd4/files/file"))
             {
                 int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
-                string name = fileNode.SelectSingleNode("name").InnerText;
+                string root = fileNode.SelectSingleNode("root").InnerText;
                 string path = fileNode.SelectSingleNode("path").InnerText;
                 byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
 
-                bnd.Files.Add(new BND4.File(id, name, flags, bytes));
+                bnd.Files.Add(new BND4.File(id, root + path, flags, bytes));
             }
 
             string outPath = $"{targetDir}\\{filename}";

@@ -1,6 +1,5 @@
 ﻿using SoulsFormats;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -27,18 +26,30 @@ namespace Yabber
             xw.WriteStartElement("files");
             foreach (BND3.File file in bnd.Files)
             {
-                string outPath = Util.UnrootBNDPath(file.Name);
+                string path, root;
+                if (bnd.Format == 0x40)
+                {
+                    root = null;
+                    path = file.ID.ToString();
+                }
+                else
+                {
+                    path = YBUtil.UnrootBNDPath(file.Name, out root);
+                }
 
                 xw.WriteStartElement("file");
                 xw.WriteElementString("id", file.ID.ToString());
-                xw.WriteElementString("name", file.Name ?? "<null>");
-                xw.WriteElementString("path", outPath);
+                if (bnd.Format != 0x40)
+                {
+                    xw.WriteElementString("root", root);
+                    xw.WriteElementString("path", path);
+                }
                 xw.WriteElementString("flags", $"0x{file.Flags:X2}");
                 xw.WriteEndElement();
 
-                outPath = $"{targetDir}\\{outPath}";
-                Directory.CreateDirectory(Path.GetDirectoryName(outPath));
-                System.IO.File.WriteAllBytes(outPath, file.Bytes);
+                path = $"{targetDir}\\{path}";
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                File.WriteAllBytes(path, file.Bytes);
             }
             xw.WriteEndElement();
 
@@ -59,18 +70,24 @@ namespace Yabber
             bnd.BigEndian = bool.Parse(xml.SelectSingleNode("bnd3/bigendian").InnerText);
             bnd.Unk1 = bool.Parse(xml.SelectSingleNode("bnd3/unk1").InnerText);
             bnd.Unk2 = Convert.ToInt32(xml.SelectSingleNode("bnd3/unk2").InnerText, 16);
-            
+
             foreach (XmlNode fileNode in xml.SelectNodes("bnd3/files/file"))
             {
                 int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
-                string name = fileNode.SelectSingleNode("name").InnerText;
-                string path = fileNode.SelectSingleNode("path").InnerText;
+                string name, path;
+                if (bnd.Format == 0x40)
+                {
+                    path = id.ToString();
+                    name = null;
+                }
+                else
+                {
+                    path = fileNode.SelectSingleNode("path").InnerText;
+                    name = fileNode.SelectSingleNode("root").InnerText + path;
+                }
                 byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
 
-                if (name == "<null>")
-                    name = null;
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-
                 bnd.Files.Add(new BND3.File(id, name, flags, bytes));
             }
 

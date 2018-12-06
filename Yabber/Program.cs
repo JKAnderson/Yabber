@@ -67,7 +67,10 @@ namespace Yabber
         {
             string sourceDir = Path.GetDirectoryName(sourceFile);
             string filename = Path.GetFileName(sourceFile);
-            string targetDir = $"{sourceDir}\\{filename}.yabber";
+            string targetDir = $"{sourceDir}\\{filename.Replace('.', '-')}";
+            if (File.Exists(targetDir))
+                targetDir += "-ybr";
+
             if (DCX.Is(sourceFile))
             {
                 Console.WriteLine($"Decompressing DCX: {filename}...");

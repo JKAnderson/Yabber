@@ -60,7 +60,12 @@ namespace Yabber
             Console.WriteLine($"Decompressing DCX: {Path.GetFileName(sourceFile)}...");
 
             string sourceDir = Path.GetDirectoryName(sourceFile);
-            string outPath = $"{sourceDir}\\{Path.GetFileNameWithoutExtension(sourceFile)}";
+            string outPath;
+            if (sourceFile.EndsWith(".dcx"))
+                outPath = $"{sourceDir}\\{Path.GetFileNameWithoutExtension(sourceFile)}";
+            else
+                outPath = $"{sourceDir}\\{sourceFile}.undcx";
+
             byte[] bytes = DCX.Decompress(sourceFile, out DCX.Type compression);
             File.WriteAllBytes(outPath, bytes);
 
@@ -90,7 +95,12 @@ namespace Yabber
             xml.Load(xmlPath);
             Enum.TryParse(xml.SelectSingleNode("dcx/compression").InnerText, out DCX.Type compression);
 
-            string outPath = path + ".dcx";
+            string outPath;
+            if (path.EndsWith(".undcx"))
+                outPath = path.Substring(0, path.Length - 6);
+            else
+                outPath = path + ".dcx";
+
             if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
                 File.Move(outPath, outPath + ".bak");
 

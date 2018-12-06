@@ -27,17 +27,17 @@ namespace Yabber
             xw.WriteStartElement("files");
             foreach (BXF3.File file in bxf.Files)
             {
-                string outPath = Util.UnrootBNDPath(file.Name);
+                string path = YBUtil.UnrootBNDPath(file.Name, out string root);
 
                 xw.WriteStartElement("file");
                 xw.WriteElementString("id", file.ID.ToString());
-                xw.WriteElementString("name", file.Name);
-                xw.WriteElementString("path", outPath);
+                xw.WriteElementString("root", root);
+                xw.WriteElementString("path", path);
                 xw.WriteEndElement();
 
-                outPath = $"{targetDir}\\{outPath}";
-                Directory.CreateDirectory(Path.GetDirectoryName(outPath));
-                File.WriteAllBytes(outPath, file.Bytes);
+                path = $"{targetDir}\\{path}";
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+                File.WriteAllBytes(path, file.Bytes);
             }
             xw.WriteEndElement();
 
@@ -60,11 +60,11 @@ namespace Yabber
             foreach (XmlNode fileNode in xml.SelectNodes("bxf3/files/file"))
             {
                 int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
-                string name = fileNode.SelectSingleNode("name").InnerText;
+                string root = fileNode.SelectSingleNode("root").InnerText;
                 string path = fileNode.SelectSingleNode("path").InnerText;
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bxf.Files.Add(new BXF3.File(id, name, bytes));
+                bxf.Files.Add(new BXF3.File(id, root + path, bytes));
             }
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
