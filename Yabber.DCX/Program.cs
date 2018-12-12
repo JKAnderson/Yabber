@@ -12,13 +12,13 @@ namespace Yabber
         {
             if (args.Length == 0)
             {
+                Assembly assembly = Assembly.GetExecutingAssembly();
                 Console.WriteLine(
-                    "\n" +
-                    " Yabber.DCX has no GUI.\n" +
-                    " Drag and drop a DCX onto the exe to decompress it,\n" +
-                    " or a decompressed file to recompress it.\n\n" +
-                    " Yabber.DCX version: " + Assembly.GetExecutingAssembly().GetName().Version + "\n" +
-                    " Press any key to exit."
+                    $"{assembly.GetName().Name} {assembly.GetName().Version}\n\n" +
+                    "Yabber.DCX has no GUI.\n" +
+                    "Drag and drop a DCX onto the exe to decompress it,\n" +
+                    "or a decompressed file to recompress it.\n\n" +
+                    "Press any key to exit."
                     );
                 Console.ReadKey();
                 return;
@@ -30,7 +30,7 @@ namespace Yabber
             {
                 try
                 {
-                    if (Path.GetExtension(path) == ".dcx")
+                    if (DCX.Is(path))
                     {
                         pause |= Decompress(path);
                     }

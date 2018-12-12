@@ -11,17 +11,16 @@ namespace Yabber
         {
             if (args.Length == 0)
             {
+                Assembly assembly = Assembly.GetExecutingAssembly();
                 Console.WriteLine(
-                    "\n" +
-                    " Yabber has no GUI.\n" +
-                    " Drag and drop a file onto the exe to unpack it,\n" +
-                    " or an unpacked folder to repack it.\n\n" +
-                    " DCX files will be transparently decompressed and recompressed;\n" +
-                    " If you need to decompress or recompress an unsupported format,\n" +
-                    " use Yabber.DCX.exe instead.\n\n" +
-                    " Yabber version: " + Assembly.GetExecutingAssembly().GetName().Version + "\n" +
-                    " Supported formats: BND3, BND4, BXF3, BXF4, TPF\n" +
-                    " Press any key to exit."
+                    $"{assembly.GetName().Name} {assembly.GetName().Version}\n\n" +
+                    "Yabber has no GUI.\n" +
+                    "Drag and drop a file onto the exe to unpack it,\n" +
+                    "or an unpacked folder to repack it.\n\n" +
+                    "DCX files will be transparently decompressed and recompressed;\n" +
+                    "If you need to decompress or recompress an unsupported format,\n" +
+                    "use Yabber.DCX instead.\n\n" +
+                    "Press any key to exit."
                     );
                 Console.ReadKey();
                 return;

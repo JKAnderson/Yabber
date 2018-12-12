@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Yabber.Context
 {
@@ -8,7 +9,9 @@ namespace Yabber.Context
     {
         static void Main(string[] args)
         {
+            Assembly assembly = Assembly.GetExecutingAssembly();
             Console.Write(
+                $"{assembly.GetName().Name} {assembly.GetName().Version}\n\n" +
                 "This program will register Yabber.exe and Yabber.DCX.exe\n" +
                 "so that they can be run by right-clicking on a file or folder.\n" +
                 "Enter R to register, U to unregister, or anything else to exit.\n" +

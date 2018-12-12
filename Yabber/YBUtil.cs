@@ -12,6 +12,8 @@ namespace Yabber
             @"N:\DemonsSoul\data\",
             @"N:\DemonsSoul\",
             @"Z:\data\",
+            // Ninja Blade
+            @"I:\NinjaBlade\",
             // Dark Souls 1
             @"N:\FRPG\data\INTERROOT_win32\",
             @"N:\FRPG\data\INTERROOT_win64\",
@@ -46,7 +48,6 @@ namespace Yabber
         {
             foreach (string pathRoot in pathRoots)
             {
-                // This tolowering is only here because DSR has 3 files that start with "n:\"
                 if (path.ToLower().StartsWith(pathRoot.ToLower()))
                 {
                     root = path.Substring(0, pathRoot.Length);
