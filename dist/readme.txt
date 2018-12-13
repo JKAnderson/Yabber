@@ -1,5 +1,5 @@
 
---| Yabber 1.0
+--| Yabber 1.0.1
 --| By TKGP
 --| https://www.nexusmods.com/darksouls3/mods/305
 --| https://github.com/JKAnderson/Yabber
@@ -56,3 +56,9 @@ A single compressed file, used in all games.
 TPF
 Extension: .tpf
 A DDS texture container, used in all games. Console versions are not supported.
+
+
+--| Changelog
+
+1.0.1
+	Fix bad BXF4 repacking
