@@ -46,7 +46,8 @@ namespace Yabber
             foreach (XmlNode textNode in xml.SelectNodes("fmg/entries/text"))
             {
                 int id = int.Parse(textNode.Attributes["id"].InnerText);
-                string text = textNode.InnerText;
+                // \r\n is drawn as two newlines ingame
+                string text = textNode.InnerText.Replace("\r\n", "\n");
                 if (text == "%null%")
                     text = null;
                 fmg.Entries.Add(new FMG.Entry(id, text));

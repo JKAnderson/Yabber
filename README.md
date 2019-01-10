@@ -7,6 +7,10 @@ Requires [.NET 4.7.2](https://www.microsoft.com/net/download/thank-you/net472) -
 Please see the included readme for detailed instructions.
 
 # Changelog
+### 1.1.1
+* Fix repacked FMGs getting double-spaced
+* Fix decompressing DCXs that aren't named .dcx
+
 ### 1.1
 * Add FMG support
 

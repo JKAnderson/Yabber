@@ -64,7 +64,7 @@ namespace Yabber
             if (sourceFile.EndsWith(".dcx"))
                 outPath = $"{sourceDir}\\{Path.GetFileNameWithoutExtension(sourceFile)}";
             else
-                outPath = $"{sourceDir}\\{sourceFile}.undcx";
+                outPath = $"{sourceFile}.undcx";
 
             byte[] bytes = DCX.Decompress(sourceFile, out DCX.Type compression);
             File.WriteAllBytes(outPath, bytes);

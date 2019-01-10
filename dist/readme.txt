@@ -1,5 +1,5 @@
 
---| Yabber 1.1
+--| Yabber 1.1.1
 --| By TKGP
 --| https://www.nexusmods.com/darksouls3/mods/305
 --| https://github.com/JKAnderson/Yabber
@@ -66,6 +66,10 @@ A DDS texture container, used in all games. Console versions are not supported.
 
 
 --| Changelog
+
+1.1.1
+	Fix repacked FMGs getting double-spaced
+	Fix decompressing DCXs that aren't named .dcx
 
 1.1
 	Add FMG support
