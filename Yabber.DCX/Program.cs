@@ -10,6 +10,12 @@ namespace Yabber
     {
         static void Main(string[] args)
         {
+#if DEBUG
+            args = new string[] {
+                @"C:\Program Files (x86)\Steam\steamapps\common\Dark Souls II Scholar of the First Sin\Game\sound\frpg2_c1000.bnd.undcx",
+            };
+#endif
+
             if (args.Length == 0)
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
@@ -93,7 +99,7 @@ namespace Yabber
             Console.WriteLine($"Compressing file: {Path.GetFileName(path)}...");
             XmlDocument xml = new XmlDocument();
             xml.Load(xmlPath);
-            Enum.TryParse(xml.SelectSingleNode("dcx/compression").InnerText, out DCX.Type compression);
+            DCX.Type compression = (DCX.Type)Enum.Parse(typeof(DCX.Type), xml.SelectSingleNode("dcx/compression").InnerText);
 
             string outPath;
             if (path.EndsWith(".undcx"))
@@ -104,7 +110,7 @@ namespace Yabber
             if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
                 File.Move(outPath, outPath + ".bak");
 
-            DCX.Compress(File.ReadAllBytes(path), compression, path + ".dcx");
+            DCX.Compress(File.ReadAllBytes(path), compression, outPath);
 
             return false;
         }
