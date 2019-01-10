@@ -38,6 +38,7 @@ namespace Yabber
                     }
                     else if (File.Exists(path))
                     {
+
                         pause |= UnpackFile(path);
                     }
                     else
@@ -154,6 +155,17 @@ namespace Yabber
                     Console.WriteLine($"Unpacking TPF: {filename}...");
                     TPF tpf = TPF.Read(sourceFile);
                     tpf.Unpack(filename, targetDir);
+                }
+                else if (sourceFile.EndsWith(".fmg"))
+                {
+                    Console.WriteLine($"Unpacking FMG: {filename}...");
+                    FMG fmg = FMG.Read(sourceFile);
+                    fmg.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".fmg.xml"))
+                {
+                    Console.WriteLine($"Repacking FMG: {filename}...");
+                    YFMG.Repack(sourceFile);
                 }
                 else
                 {
