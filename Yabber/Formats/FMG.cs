@@ -47,7 +47,7 @@ namespace Yabber
             {
                 int id = int.Parse(textNode.Attributes["id"].InnerText);
                 // \r\n is drawn as two newlines ingame
-                string text = textNode.InnerText.Replace("\r\n", "\n");
+                string text = textNode.InnerText.Replace("\r", "");
                 if (text == "%null%")
                     text = null;
                 fmg.Entries.Add(new FMG.Entry(id, text));
