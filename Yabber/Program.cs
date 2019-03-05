@@ -96,6 +96,12 @@ namespace Yabber
                     tpf.Compression = compression;
                     tpf.Unpack(filename, targetDir);
                 }
+                else if (sourceFile.EndsWith(".gparam.dcx"))
+                {
+                    Console.WriteLine($"Unpacking GPARAM: {filename}...");
+                    GPARAM gparam = GPARAM.Read(sourceFile);
+                    gparam.Unpack(sourceFile);
+                }
                 else
                 {
                     Console.WriteLine($"File format not recognized: {filename}");
@@ -166,6 +172,12 @@ namespace Yabber
                 {
                     Console.WriteLine($"Repacking FMG: {filename}...");
                     YFMG.Repack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".gparam"))
+                {
+                    Console.WriteLine($"Unpacking GPARAM: {filename}...");
+                    GPARAM gparam = GPARAM.Read(sourceFile);
+                    gparam.Unpack(sourceFile);
                 }
                 else
                 {

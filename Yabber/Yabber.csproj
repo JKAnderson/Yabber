@@ -60,6 +60,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -72,6 +73,7 @@
     <Compile Include="Formats\BXF4.cs" />
     <Compile Include="Formats\BND4.cs" />
     <Compile Include="Formats\BND3.cs" />
+    <Compile Include="Formats\GPARAM.cs" />
     <Compile Include="Formats\FMG.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
