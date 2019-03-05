@@ -22,7 +22,7 @@ namespace Yabber
             xw.WriteStartElement("bhd");
             xw.WriteElementString("filename", bhdName);
             xw.WriteElementString("timestamp", bxf.BHD.Timestamp);
-            xw.WriteElementString("format", $"0x{bxf.BHD.Format:X2}");
+            xw.WriteElementString("format", $"0x{(byte)bxf.BHD.Format:X2}");
             xw.WriteElementString("unicode", bxf.BHD.Unicode.ToString());
             xw.WriteElementString("bigendian", bxf.BHD.BigEndian.ToString());
             xw.WriteElementString("flag1", bxf.BHD.Flag1.ToString());
@@ -48,7 +48,7 @@ namespace Yabber
                 xw.WriteElementString("id", file.ID.ToString());
                 xw.WriteElementString("root", root);
                 xw.WriteElementString("path", path);
-                xw.WriteElementString("flags", $"0x{file.Flags:X2}");
+                xw.WriteElementString("flags", $"0x{(byte)file.Flags:X2}");
                 xw.WriteEndElement();
 
                 path = $"{targetDir}\\{path}";
@@ -69,7 +69,7 @@ namespace Yabber
 
             string bhdFilename = xml.SelectSingleNode("bxf4/bhd/filename").InnerText;
             bxf.BHD.Timestamp = xml.SelectSingleNode("bxf4/bhd/timestamp").InnerText;
-            bxf.BHD.Format = Convert.ToByte(xml.SelectSingleNode("bxf4/bhd/format").InnerText, 16);
+            bxf.BHD.Format = (Binder.Format)Convert.ToByte(xml.SelectSingleNode("bxf4/bhd/format").InnerText, 16);
             bxf.BHD.Unicode = bool.Parse(xml.SelectSingleNode("bxf4/bhd/unicode").InnerText);
             bxf.BHD.BigEndian = bool.Parse(xml.SelectSingleNode("bxf4/bhd/bigendian").InnerText);
             bxf.BHD.Flag1 = bool.Parse(xml.SelectSingleNode("bxf4/bhd/flag1").InnerText);
@@ -91,7 +91,7 @@ namespace Yabber
                 byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bxf.Files.Add(new BXF4.File(id, root + path, flags, bytes));
+                bxf.Files.Add(new BXF4.File(id, root + path, (Binder.FileFlags)flags, bytes));
             }
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
