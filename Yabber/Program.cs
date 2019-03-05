@@ -99,7 +99,7 @@ namespace Yabber
                 else if (sourceFile.EndsWith(".gparam.dcx"))
                 {
                     Console.WriteLine($"Unpacking GPARAM: {filename}...");
-                    GPARAM gparam = GPARAM.Read(sourceFile);
+                    GPARAM gparam = GPARAM.Read(bytes);
                     gparam.Unpack(sourceFile);
                 }
                 else
@@ -178,6 +178,28 @@ namespace Yabber
                     Console.WriteLine($"Unpacking GPARAM: {filename}...");
                     GPARAM gparam = GPARAM.Read(sourceFile);
                     gparam.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".luagnl"))
+                {
+                    Console.WriteLine($"Unpacking LUAGNL: {filename}...");
+                    LUAGNL gnl = LUAGNL.Read(sourceFile);
+                    gnl.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".luagnl.xml"))
+                {
+                    Console.WriteLine($"Repacking LUAGNL: {filename}...");
+                    YLUAGNL.Repack(sourceFile);
+                }
+                else if (LUAINFO.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking LUAINFO: {filename}...");
+                    LUAINFO info = LUAINFO.Read(sourceFile);
+                    info.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".luainfo.xml"))
+                {
+                    Console.WriteLine($"Repacking LUAINFO: {filename}...");
+                    YLUAINFO.Repack(sourceFile);
                 }
                 else
                 {
