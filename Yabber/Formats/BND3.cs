@@ -18,7 +18,7 @@ namespace Yabber
             xw.WriteElementString("filename", sourceName);
             xw.WriteElementString("compression", bnd.Compression.ToString());
             xw.WriteElementString("timestamp", bnd.Timestamp);
-            xw.WriteElementString("format", $"0x{bnd.Format:X2}");
+            xw.WriteElementString("format", $"0x{(byte)bnd.Format:X2}");
             xw.WriteElementString("bigendian", bnd.BigEndian.ToString());
             xw.WriteElementString("unk1", bnd.Unk1.ToString());
             xw.WriteElementString("unk2", $"0x{bnd.Unk2:X8}");
@@ -27,24 +27,24 @@ namespace Yabber
             foreach (BND3.File file in bnd.Files)
             {
                 string path, root;
-                if (bnd.Format == 0x40)
-                {
-                    root = null;
-                    path = file.ID.ToString();
-                }
-                else
+                if (Binder.HasName(bnd.Format))
                 {
                     path = YBUtil.UnrootBNDPath(file.Name, out root);
+                }
+                else
+                { 
+                    root = null;
+                    path = file.ID.ToString();
                 }
 
                 xw.WriteStartElement("file");
                 xw.WriteElementString("id", file.ID.ToString());
-                if (bnd.Format != 0x40)
+                if (Binder.HasName(bnd.Format))
                 {
                     xw.WriteElementString("root", root);
                     xw.WriteElementString("path", path);
                 }
-                xw.WriteElementString("flags", $"0x{file.Flags:X2}");
+                xw.WriteElementString("flags", $"0x{(byte)file.Flags:X2}");
                 xw.WriteEndElement();
 
                 path = $"{targetDir}\\{path}";
@@ -66,7 +66,7 @@ namespace Yabber
             string filename = xml.SelectSingleNode("bnd3/filename").InnerText;
             Enum.TryParse(xml.SelectSingleNode("bnd3/compression").InnerText, out bnd.Compression);
             bnd.Timestamp = xml.SelectSingleNode("bnd3/timestamp").InnerText;
-            bnd.Format = Convert.ToByte(xml.SelectSingleNode("bnd3/format").InnerText, 16);
+            bnd.Format = (Binder.Format)Convert.ToByte(xml.SelectSingleNode("bnd3/format").InnerText, 16);
             bnd.BigEndian = bool.Parse(xml.SelectSingleNode("bnd3/bigendian").InnerText);
             bnd.Unk1 = bool.Parse(xml.SelectSingleNode("bnd3/unk1").InnerText);
             bnd.Unk2 = Convert.ToInt32(xml.SelectSingleNode("bnd3/unk2").InnerText, 16);
@@ -75,20 +75,20 @@ namespace Yabber
             {
                 int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
                 string name, path;
-                if (bnd.Format == 0x40)
-                {
-                    path = id.ToString();
-                    name = null;
-                }
-                else
+                if (Binder.HasName(bnd.Format))
                 {
                     path = fileNode.SelectSingleNode("path").InnerText;
                     name = fileNode.SelectSingleNode("root").InnerText + path;
                 }
+                else
+                { 
+                    path = id.ToString();
+                    name = null;
+                }
                 byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bnd.Files.Add(new BND3.File(id, name, flags, bytes));
+                bnd.Files.Add(new BND3.File(id, name, (Binder.FileFlags)flags, bytes));
             }
 
             string outPath = $"{targetDir}\\{filename}";
