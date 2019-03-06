@@ -19,7 +19,7 @@ namespace Yabber
             xw.WriteElementString("filename", sourceName);
             xw.WriteElementString("compression", bnd.Compression.ToString());
             xw.WriteElementString("timestamp", bnd.Timestamp);
-            xw.WriteElementString("format", $"0x{bnd.Format:X2}");
+            xw.WriteElementString("format", $"0x{(byte)bnd.Format:X2}");
             xw.WriteElementString("bigendian", bnd.BigEndian.ToString());
             xw.WriteElementString("flag1", bnd.Flag1.ToString());
             xw.WriteElementString("flag2", bnd.Flag2.ToString());
@@ -35,7 +35,7 @@ namespace Yabber
                 xw.WriteElementString("id", file.ID.ToString());
                 xw.WriteElementString("root", root);
                 xw.WriteElementString("path", path);
-                xw.WriteElementString("flags", $"0x{file.Flags:X2}");
+                xw.WriteElementString("flags", $"0x{(byte)file.Flags:X2}");
                 xw.WriteEndElement();
 
                 path = $"{targetDir}\\{path}";
@@ -57,7 +57,7 @@ namespace Yabber
             string filename = xml.SelectSingleNode("bnd4/filename").InnerText;
             Enum.TryParse(xml.SelectSingleNode("bnd4/compression").InnerText, out bnd.Compression);
             bnd.Timestamp = xml.SelectSingleNode("bnd4/timestamp").InnerText;
-            bnd.Format = Convert.ToByte(xml.SelectSingleNode("bnd4/format").InnerText, 16);
+            bnd.Format = (Binder.Format)Convert.ToByte(xml.SelectSingleNode("bnd4/format").InnerText, 16);
             bnd.BigEndian = bool.Parse(xml.SelectSingleNode("bnd4/bigendian").InnerText);
             bnd.Flag1 = bool.Parse(xml.SelectSingleNode("bnd4/flag1").InnerText);
             bnd.Flag2 = bool.Parse(xml.SelectSingleNode("bnd4/flag2").InnerText);
@@ -73,7 +73,7 @@ namespace Yabber
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
 
-                bnd.Files.Add(new BND4.File(id, root + path, flags, bytes));
+                bnd.Files.Add(new BND4.File(id, root + path, (Binder.FileFlags)flags, bytes));
             }
 
             string outPath = $"{targetDir}\\{filename}";

@@ -10,12 +10,6 @@ namespace Yabber
     {
         static void Main(string[] args)
         {
-#if DEBUG
-            args = new string[] {
-                @"C:\Program Files (x86)\Steam\steamapps\common\Dark Souls II Scholar of the First Sin\Game\sound\frpg2_c1000.bnd.undcx",
-            };
-#endif
-
             if (args.Length == 0)
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
