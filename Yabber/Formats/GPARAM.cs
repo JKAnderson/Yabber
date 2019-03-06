@@ -150,14 +150,15 @@ namespace Yabber
                 gparam.Groups.Add(g);
             }
 
-            foreach (XmlNode unk in xml.SelectNodes("gparam/groups/unk3s/unk3"))
+            foreach (XmlNode unk in xml.SelectNodes("gparam/unk3s/unk3"))
             {
                 var u = new GPARAM.Unk3();
-                u.ID = int.Parse(unk.Attributes.GetNamedItem("ID").InnerText);
+                u.ID = int.Parse(unk.Attributes.GetNamedItem("id").InnerText);
                 foreach (XmlNode value in unk.SelectNodes("value"))
                 {
                     u.Values.Add(int.Parse(value.InnerText));
                 }
+                gparam.Unk3s.Add(u);
             }
 
             gparam.UnkBlock2 = Convert.FromBase64String(xml.SelectSingleNode("gparam/unkBlock").InnerText);
