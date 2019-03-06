@@ -179,6 +179,11 @@ namespace Yabber
                     GPARAM gparam = GPARAM.Read(sourceFile);
                     gparam.Unpack(sourceFile);
                 }
+                else if (sourceFile.EndsWith(".gparam.xml") || sourceFile.EndsWith(".gparam.dcx.xml"))
+                {
+                    Console.WriteLine($"Repacking GPARAM: {filename}...");
+                    YGPARAM.Repack(sourceFile);
+                }
                 else if (sourceFile.EndsWith(".luagnl"))
                 {
                     Console.WriteLine($"Unpacking LUAGNL: {filename}...");
