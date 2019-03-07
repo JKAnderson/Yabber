@@ -89,18 +89,26 @@ namespace Yabber
                     bnd.Compression = compression;
                     bnd.Unpack(filename, targetDir);
                 }
+                else if (sourceFile.EndsWith(".fmg.dcx"))
+                {
+                    Console.WriteLine($"Unpacking FMG: {filename}...");
+                    FMG fmg = FMG.Read(bytes);
+                    fmg.Compression = compression;
+                    fmg.Unpack(sourceFile);
+                }
+                else if (GPARAM.Is(bytes))
+                {
+                    Console.WriteLine($"Unpacking GPARAM: {filename}...");
+                    GPARAM gparam = GPARAM.Read(bytes);
+                    gparam.Compression = compression;
+                    gparam.Unpack(sourceFile);
+                }
                 else if (TPF.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking TPF: {filename}...");
                     TPF tpf = TPF.Read(bytes);
                     tpf.Compression = compression;
                     tpf.Unpack(filename, targetDir);
-                }
-                else if (sourceFile.EndsWith(".gparam.dcx"))
-                {
-                    Console.WriteLine($"Unpacking GPARAM: {filename}...");
-                    GPARAM gparam = GPARAM.Read(bytes);
-                    gparam.Unpack(sourceFile);
                 }
                 else
                 {
@@ -156,19 +164,13 @@ namespace Yabber
                         return true;
                     }
                 }
-                else if (TPF.Is(sourceFile))
-                {
-                    Console.WriteLine($"Unpacking TPF: {filename}...");
-                    TPF tpf = TPF.Read(sourceFile);
-                    tpf.Unpack(filename, targetDir);
-                }
                 else if (sourceFile.EndsWith(".fmg"))
                 {
                     Console.WriteLine($"Unpacking FMG: {filename}...");
                     FMG fmg = FMG.Read(sourceFile);
                     fmg.Unpack(sourceFile);
                 }
-                else if (sourceFile.EndsWith(".fmg.xml"))
+                else if (sourceFile.EndsWith(".fmg.xml") || sourceFile.EndsWith(".fmg.dcx.xml"))
                 {
                     Console.WriteLine($"Repacking FMG: {filename}...");
                     YFMG.Repack(sourceFile);
@@ -205,6 +207,12 @@ namespace Yabber
                 {
                     Console.WriteLine($"Repacking LUAINFO: {filename}...");
                     YLUAINFO.Repack(sourceFile);
+                }
+                else if (TPF.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking TPF: {filename}...");
+                    TPF tpf = TPF.Read(sourceFile);
+                    tpf.Unpack(filename, targetDir);
                 }
                 else
                 {

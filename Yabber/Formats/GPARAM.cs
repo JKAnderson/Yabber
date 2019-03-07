@@ -16,6 +16,7 @@ namespace Yabber
             XmlWriter xw = XmlWriter.Create($"{sourceFile}.xml", xws);
 
             xw.WriteStartElement("gparam");
+            xw.WriteElementString("compression", gparam.Compression.ToString());
             xw.WriteElementString("unk1", gparam.Unk1.ToString());
             xw.WriteStartElement("groups");
             foreach (GPARAM.Group group in gparam.Groups)
@@ -87,78 +88,88 @@ namespace Yabber
             GPARAM gparam = new GPARAM();
             XmlDocument xml = new XmlDocument();
             xml.Load(sourceFile);
+            Enum.TryParse(xml.SelectSingleNode("gparam/compression").InnerText, out gparam.Compression);
             gparam.Unk1 = int.Parse(xml.SelectSingleNode("gparam/unk1").InnerText);
-            foreach (XmlNode group in xml.SelectNodes("gparam/groups/group"))
+            foreach (XmlNode groupNode in xml.SelectNodes("gparam/groups/group"))
             {
-                var g = new GPARAM.Group();
-                g.Name1 = group.Attributes.GetNamedItem("name1").InnerText;
-                g.Name2 = group.Attributes.GetNamedItem("name2").InnerText;
+                string groupName1 = groupNode.Attributes["name1"].InnerText;
+                string groupName2 = groupNode.Attributes["name2"].InnerText;
+                var group = new GPARAM.Group(groupName1, groupName2);
                 bool addedComments = false;
-                foreach (XmlNode param in group.SelectNodes("param"))
+                foreach (XmlNode paramNode in groupNode.SelectNodes("param"))
                 {
-                    var p = new GPARAM.Param();
-                    p.Name1 = param.Attributes.GetNamedItem("name1").InnerText;
-                    p.Name2 = param.Attributes.GetNamedItem("name2").InnerText;
-                    p.Type = (GPARAM.ParamType)Enum.Parse(typeof(GPARAM.ParamType), param.Attributes.GetNamedItem("type").InnerText);
-                    foreach (XmlNode value in param.SelectNodes("value"))
+                    string paramName1 = paramNode.Attributes["name1"].InnerText;
+                    string paramName2 = paramNode.Attributes["name2"].InnerText;
+                    var paramType = (GPARAM.ParamType)Enum.Parse(typeof(GPARAM.ParamType), paramNode.Attributes["type"].InnerText);
+                    var param = new GPARAM.Param(paramName1, paramName2, paramType);
+                    foreach (XmlNode value in paramNode.SelectNodes("value"))
                     {
-                        p.Unk1Values.Add(int.Parse(value.Attributes.GetNamedItem("id").InnerText));
+                        param.Unk1Values.Add(int.Parse(value.Attributes["id"].InnerText));
                         if (!addedComments)
                         {
-                            g.Comments.Add(value.Attributes.GetNamedItem("comment").InnerText);
+                            group.Comments.Add(value.Attributes["comment"].InnerText);
                         }
-                        switch (p.Type)
+
+                        switch (param.Type)
                         {
                             case GPARAM.ParamType.BoolA:
-                                p.Values.Add(bool.Parse(value.InnerText));
+                                param.Values.Add(bool.Parse(value.InnerText));
                                 break;
+
                             case GPARAM.ParamType.BoolB:
-                                p.Values.Add(bool.Parse(value.InnerText));
+                                param.Values.Add(bool.Parse(value.InnerText));
                                 break;
+
                             case GPARAM.ParamType.Byte:
-                                p.Values.Add(byte.Parse(value.InnerText));
+                                param.Values.Add(byte.Parse(value.InnerText));
                                 break;
+
                             case GPARAM.ParamType.Byte4:
-                                var str = value.InnerText;
-                                p.Values.Add(str.Split(' ').Select(x => byte.Parse(x)).ToArray());
+                                param.Values.Add(value.InnerText.Split(' ').Select(x => byte.Parse(x)).ToArray());
                                 break;
+
                             case GPARAM.ParamType.Float:
-                                p.Values.Add(float.Parse(value.InnerText));
+                                param.Values.Add(float.Parse(value.InnerText));
                                 break;
+
                             case GPARAM.ParamType.Float2:
-                                var arr = value.InnerText.Split(' ').Select(x => float.Parse(x)).ToArray();
-                                p.Values.Add(new Vector2(arr[0], arr[1]));
+                                float[] arr = value.InnerText.Split(' ').Select(x => float.Parse(x)).ToArray();
+                                param.Values.Add(new Vector2(arr[0], arr[1]));
                                 break;
+
                             case GPARAM.ParamType.Float4:
-                                var arr2 = value.InnerText.Split(' ').Select(x => float.Parse(x)).ToArray();
-                                p.Values.Add(new Vector4(arr2[0], arr2[1], arr2[2], arr2[3]));
+                                float[] arr2 = value.InnerText.Split(' ').Select(x => float.Parse(x)).ToArray();
+                                param.Values.Add(new Vector4(arr2[0], arr2[1], arr2[2], arr2[3]));
                                 break;
+
                             case GPARAM.ParamType.IntA:
-                                p.Values.Add(int.Parse(value.InnerText));
+                                param.Values.Add(int.Parse(value.InnerText));
                                 break;
+
                             case GPARAM.ParamType.IntB:
-                                p.Values.Add(int.Parse(value.InnerText));
+                                param.Values.Add(int.Parse(value.InnerText));
                                 break;
+
                             case GPARAM.ParamType.Short:
-                                p.Values.Add(short.Parse(value.InnerText));
+                                param.Values.Add(short.Parse(value.InnerText));
                                 break;
                         }
                     }
                     addedComments = true;
-                    g.Params.Add(p);
+                    group.Params.Add(param);
                 }
-                gparam.Groups.Add(g);
+                gparam.Groups.Add(group);
             }
 
             foreach (XmlNode unk in xml.SelectNodes("gparam/unk3s/unk3"))
             {
-                var u = new GPARAM.Unk3();
-                u.ID = int.Parse(unk.Attributes.GetNamedItem("id").InnerText);
+                int id = int.Parse(unk.Attributes["id"].InnerText);
+                var unk3 = new GPARAM.Unk3(id);
                 foreach (XmlNode value in unk.SelectNodes("value"))
                 {
-                    u.Values.Add(int.Parse(value.InnerText));
+                    unk3.Values.Add(int.Parse(value.InnerText));
                 }
-                gparam.Unk3s.Add(u);
+                gparam.Unk3s.Add(unk3);
             }
 
             gparam.UnkBlock2 = Convert.FromBase64String(xml.SelectSingleNode("gparam/unkBlock").InnerText);

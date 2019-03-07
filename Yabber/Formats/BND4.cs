@@ -27,7 +27,7 @@ namespace Yabber
             xw.WriteElementString("extended", $"0x{bnd.Extended:X2}");
 
             xw.WriteStartElement("files");
-            foreach (BND4.File file in bnd.Files)
+            foreach (BinderFile file in bnd.Files)
             {
                 string path = YBUtil.UnrootBNDPath(file.Name, out string root);
 
@@ -63,7 +63,7 @@ namespace Yabber
             bnd.Flag2 = bool.Parse(xml.SelectSingleNode("bnd4/flag2").InnerText);
             bnd.Unicode = bool.Parse(xml.SelectSingleNode("bnd4/unicode").InnerText);
             bnd.Extended = Convert.ToByte(xml.SelectSingleNode("bnd4/extended").InnerText, 16);
-            
+
             foreach (XmlNode fileNode in xml.SelectNodes("bnd4/files/file"))
             {
                 int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
@@ -73,7 +73,7 @@ namespace Yabber
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
 
-                bnd.Files.Add(new BND4.File(id, root + path, (Binder.FileFlags)flags, bytes));
+                bnd.Files.Add(new BinderFile((Binder.FileFlags)flags, id, root + path, bytes));
             }
 
             string outPath = $"{targetDir}\\{filename}";

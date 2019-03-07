@@ -16,6 +16,7 @@ namespace Yabber
             xws.IndentChars = "";
             XmlWriter xw = XmlWriter.Create($"{sourceFile}.xml", xws);
             xw.WriteStartElement("fmg");
+            xw.WriteElementString("compression", fmg.Compression.ToString());
             xw.WriteElementString("version", fmg.Version.ToString());
             xw.WriteElementString("bigendian", fmg.BigEndian.ToString());
             xw.WriteStartElement("entries");
@@ -40,6 +41,7 @@ namespace Yabber
             FMG fmg = new FMG();
             XmlDocument xml = new XmlDocument();
             xml.Load(sourceFile);
+            Enum.TryParse(xml.SelectSingleNode("fmg/compression").InnerText, out fmg.Compression);
             fmg.Version = (FMG.FMGVersion)Enum.Parse(typeof(FMG.FMGVersion), xml.SelectSingleNode("fmg/version").InnerText);
             fmg.BigEndian = bool.Parse(xml.SelectSingleNode("fmg/bigendian").InnerText);
 

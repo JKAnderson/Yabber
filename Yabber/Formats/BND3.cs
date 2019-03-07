@@ -24,7 +24,7 @@ namespace Yabber
             xw.WriteElementString("unk2", $"0x{bnd.Unk2:X8}");
 
             xw.WriteStartElement("files");
-            foreach (BND3.File file in bnd.Files)
+            foreach (BinderFile file in bnd.Files)
             {
                 string path, root;
                 if (Binder.HasName(bnd.Format))
@@ -88,7 +88,7 @@ namespace Yabber
                 byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bnd.Files.Add(new BND3.File(id, name, (Binder.FileFlags)flags, bytes));
+                bnd.Files.Add(new BinderFile((Binder.FileFlags)flags, id, name, bytes));
             }
 
             string outPath = $"{targetDir}\\{filename}";

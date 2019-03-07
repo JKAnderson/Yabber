@@ -25,7 +25,7 @@ namespace Yabber
             xw.WriteEndElement();
 
             xw.WriteStartElement("files");
-            foreach (BXF3.File file in bxf.Files)
+            foreach (BinderFile file in bxf.Files)
             {
                 string path = YBUtil.UnrootBNDPath(file.Name, out string root);
 
@@ -64,7 +64,7 @@ namespace Yabber
                 string path = fileNode.SelectSingleNode("path").InnerText;
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bxf.Files.Add(new BXF3.File(id, root + path, bytes));
+                bxf.Files.Add(new BinderFile(Binder.FileFlags.x40, id, root + path, bytes));
             }
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
