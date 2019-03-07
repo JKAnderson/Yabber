@@ -1,9 +1,10 @@
 ﻿using SoulsFormats;
 using System;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Xml;
-using System.Linq;
 
 namespace Yabber
 {
@@ -125,7 +126,8 @@ namespace Yabber
                                 break;
 
                             case GPARAM.ParamType.Byte4:
-                                param.Values.Add(value.InnerText.Split(' ').Select(x => byte.Parse(x)).ToArray());
+                                byte[] bytes = value.InnerText.Split(' ').Select(b => byte.Parse(b, NumberStyles.AllowHexSpecifier)).ToArray();
+                                param.Values.Add(bytes);
                                 break;
 
                             case GPARAM.ParamType.Float:
@@ -133,12 +135,12 @@ namespace Yabber
                                 break;
 
                             case GPARAM.ParamType.Float2:
-                                float[] arr = value.InnerText.Split(' ').Select(x => float.Parse(x)).ToArray();
+                                float[] arr = value.InnerText.Split(' ').Select(f => float.Parse(f)).ToArray();
                                 param.Values.Add(new Vector2(arr[0], arr[1]));
                                 break;
 
                             case GPARAM.ParamType.Float4:
-                                float[] arr2 = value.InnerText.Split(' ').Select(x => float.Parse(x)).ToArray();
+                                float[] arr2 = value.InnerText.Split(' ').Select(f => float.Parse(f)).ToArray();
                                 param.Values.Add(new Vector4(arr2[0], arr2[1], arr2[2], arr2[3]));
                                 break;
 
