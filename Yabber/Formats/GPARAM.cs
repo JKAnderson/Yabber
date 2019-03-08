@@ -89,7 +89,7 @@ namespace Yabber
             GPARAM gparam = new GPARAM();
             XmlDocument xml = new XmlDocument();
             xml.Load(sourceFile);
-            Enum.TryParse(xml.SelectSingleNode("gparam/compression").InnerText, out gparam.Compression);
+            Enum.TryParse(xml.SelectSingleNode("gparam/compression")?.InnerText ?? "None", out gparam.Compression);
             gparam.Unk1 = int.Parse(xml.SelectSingleNode("gparam/unk1").InnerText);
             foreach (XmlNode groupNode in xml.SelectNodes("gparam/groups/group"))
             {
