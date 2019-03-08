@@ -39,24 +39,7 @@ namespace Yabber
             xw.WriteElementString("unk1", $"0x{bxf.BDT.Unk1:X16}");
             xw.WriteEndElement();
 
-            xw.WriteStartElement("files");
-            foreach (BinderFile file in bxf.Files)
-            {
-                string path = YBUtil.UnrootBNDPath(file.Name, out string root);
-
-                xw.WriteStartElement("file");
-                xw.WriteElementString("id", file.ID.ToString());
-                xw.WriteElementString("root", root);
-                xw.WriteElementString("path", path);
-                xw.WriteElementString("flags", $"0x{(byte)file.Flags:X2}");
-                xw.WriteEndElement();
-
-                path = $"{targetDir}\\{path}";
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-                File.WriteAllBytes(path, file.Bytes);
-            }
-            xw.WriteEndElement();
-
+            YBinder.WriteBinderFiles(bxf, xw, targetDir);
             xw.WriteEndElement();
             xw.Close();
         }
@@ -83,16 +66,7 @@ namespace Yabber
             bxf.BDT.Flag2 = bool.Parse(xml.SelectSingleNode("bxf4/bdt/flag2").InnerText);
             bxf.BDT.Unk1 = Convert.ToInt64(xml.SelectSingleNode("bxf4/bdt/unk1").InnerText, 16);
 
-            foreach (XmlNode fileNode in xml.SelectNodes("bxf4/files/file"))
-            {
-                int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
-                string root = fileNode.SelectSingleNode("root").InnerText;
-                string path = fileNode.SelectSingleNode("path").InnerText;
-                byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
-
-                byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bxf.Files.Add(new BinderFile((Binder.FileFlags)flags, id, root + path, bytes));
-            }
+            YBinder.ReadBinderFiles(bxf, xml.SelectSingleNode("bxf4/files"), sourceDir);
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
             if (File.Exists(bhdPath) && !File.Exists(bhdPath + ".bak"))

@@ -1,6 +1,5 @@
 ﻿using SoulsFormats;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 
@@ -25,25 +24,7 @@ namespace Yabber
             xw.WriteElementString("flag2", bnd.Flag2.ToString());
             xw.WriteElementString("unicode", bnd.Unicode.ToString());
             xw.WriteElementString("extended", $"0x{bnd.Extended:X2}");
-
-            xw.WriteStartElement("files");
-            foreach (BinderFile file in bnd.Files)
-            {
-                string path = YBUtil.UnrootBNDPath(file.Name, out string root);
-
-                xw.WriteStartElement("file");
-                xw.WriteElementString("id", file.ID.ToString());
-                xw.WriteElementString("root", root);
-                xw.WriteElementString("path", path);
-                xw.WriteElementString("flags", $"0x{(byte)file.Flags:X2}");
-                xw.WriteEndElement();
-
-                path = $"{targetDir}\\{path}";
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-                File.WriteAllBytes(path, file.Bytes);
-            }
-            xw.WriteEndElement();
-
+            YBinder.WriteBinderFiles(bnd, xw, targetDir);
             xw.WriteEndElement();
             xw.Close();
         }
@@ -63,18 +44,7 @@ namespace Yabber
             bnd.Flag2 = bool.Parse(xml.SelectSingleNode("bnd4/flag2").InnerText);
             bnd.Unicode = bool.Parse(xml.SelectSingleNode("bnd4/unicode").InnerText);
             bnd.Extended = Convert.ToByte(xml.SelectSingleNode("bnd4/extended").InnerText, 16);
-
-            foreach (XmlNode fileNode in xml.SelectNodes("bnd4/files/file"))
-            {
-                int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
-                string root = fileNode.SelectSingleNode("root").InnerText;
-                string path = fileNode.SelectSingleNode("path").InnerText;
-                byte flags = Convert.ToByte(fileNode.SelectSingleNode("flags").InnerText, 16);
-
-                byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-
-                bnd.Files.Add(new BinderFile((Binder.FileFlags)flags, id, root + path, bytes));
-            }
+            YBinder.ReadBinderFiles(bnd, xml.SelectSingleNode("bnd4/files"), sourceDir);
 
             string outPath = $"{targetDir}\\{filename}";
             if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))

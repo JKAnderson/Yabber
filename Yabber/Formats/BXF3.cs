@@ -24,23 +24,7 @@ namespace Yabber
             xw.WriteElementString("timestamp", bxf.BDTTimestamp);
             xw.WriteEndElement();
 
-            xw.WriteStartElement("files");
-            foreach (BinderFile file in bxf.Files)
-            {
-                string path = YBUtil.UnrootBNDPath(file.Name, out string root);
-
-                xw.WriteStartElement("file");
-                xw.WriteElementString("id", file.ID.ToString());
-                xw.WriteElementString("root", root);
-                xw.WriteElementString("path", path);
-                xw.WriteEndElement();
-
-                path = $"{targetDir}\\{path}";
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-                File.WriteAllBytes(path, file.Bytes);
-            }
-            xw.WriteEndElement();
-
+            YBinder.WriteBinderFiles(bxf, xw, targetDir);
             xw.WriteEndElement();
             xw.Close();
         }
@@ -57,15 +41,7 @@ namespace Yabber
             string bdtFilename = xml.SelectSingleNode("bxf3/bdt/filename").InnerText;
             bxf.BDTTimestamp = xml.SelectSingleNode("bxf3/bdt/timestamp").InnerText;
 
-            foreach (XmlNode fileNode in xml.SelectNodes("bxf3/files/file"))
-            {
-                int id = int.Parse(fileNode.SelectSingleNode("id").InnerText);
-                string root = fileNode.SelectSingleNode("root").InnerText;
-                string path = fileNode.SelectSingleNode("path").InnerText;
-
-                byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{path}");
-                bxf.Files.Add(new BinderFile(Binder.FileFlags.x40, id, root + path, bytes));
-            }
+            YBinder.ReadBinderFiles(bxf, xml.SelectSingleNode("bxf3/files"), sourceDir);
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
             if (File.Exists(bhdPath) && !File.Exists(bhdPath + ".bak"))

@@ -69,6 +69,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Formats\Binder.cs" />
     <Compile Include="Formats\BXF3.cs" />
     <Compile Include="Formats\BXF4.cs" />
     <Compile Include="Formats\BND4.cs" />
