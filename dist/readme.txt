@@ -1,5 +1,5 @@
 
---| Yabber 1.2
+--| Yabber 1.2.1
 --| By TKGP
 --| https://www.nexusmods.com/darksouls3/mods/305
 --| https://github.com/JKAnderson/Yabber
@@ -81,6 +81,12 @@ TKGP - Everything else
 
 
 --| Changelog
+
+1.2.1
+	Fix LUAINFO not working on files with 2 or fewer goals
+	Fix LUAGNL not working on some files
+	Fix GPARAM not repacking files with Byte4 params
+	Better support for weird BND/BXF formats without IDs or names
 
 1.2
 	GPARAM, LUAGNL, and LUAINFO are now supported

@@ -12,6 +12,12 @@ Please see the included readme for detailed instructions.
 *TKGP* - Everything else
 
 # Changelog
+### 1.2.1
+* Fix LUAINFO not working on files with 2 or fewer goals
+* Fix LUAGNL not working on some files
+* Fix GPARAM not repacking files with Byte4 params
+* Better support for weird BND/BXF formats without IDs or names
+
 ### 1.2
 * GPARAM, LUAGNL, and LUAINFO are now supported
 * Breaking change: compressed FMG is now supported; please repack any in-progress FMGs with the previous version, then unpack them again with this one
