@@ -9,6 +9,7 @@ namespace Yabber
     {
         static void Main(string[] args)
         {
+            args = new string[] { @"C:\Users\Joseph\Downloads\stayparam-parambnd-dcx-bak" };
             if (args.Length == 0)
             {
                 Assembly assembly = Assembly.GetExecutingAssembly();
@@ -47,7 +48,7 @@ namespace Yabber
                         pause = true;
                     }
                 }
-                catch (Exception ex)
+                catch (InvalidOperationException ex)
                 {
                     Console.WriteLine($"Unhandled exception: {ex}");
                     pause = true;

@@ -41,7 +41,7 @@ namespace Yabber
                 xw.WriteElementString("path", path);
                 xw.WriteEndElement();
 
-                path = $"{targetDir}\\{path}";
+                path = $@"{targetDir}\{path}";
                 Directory.CreateDirectory(Path.GetDirectoryName(path));
                 File.WriteAllBytes(path, file.Bytes);
             }
@@ -61,7 +61,7 @@ namespace Yabber
                 if (Binder.HasName(bnd.Format))
                     name = root + path;
 
-                byte[] bytes = File.ReadAllBytes($@"{sourceDir}\{root}{path}");
+                byte[] bytes = File.ReadAllBytes($@"{sourceDir}\{path}");
                 bnd.Files.Add(new BinderFile(flags, id, name, bytes));
             }
         }

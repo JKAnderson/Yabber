@@ -12,6 +12,9 @@ Please see the included readme for detailed instructions.
 *TKGP* - Everything else
 
 # Changelog
+### 1.2.2
+* Fix not being able to repack bnds with roots
+
 ### 1.2.1
 * Fix LUAINFO not working on files with 2 or fewer goals
 * Fix LUAGNL not working on some files

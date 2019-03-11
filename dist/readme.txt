@@ -1,5 +1,5 @@
 
---| Yabber 1.2.1
+--| Yabber 1.2.2
 --| By TKGP
 --| https://www.nexusmods.com/darksouls3/mods/305
 --| https://github.com/JKAnderson/Yabber
@@ -81,6 +81,9 @@ TKGP - Everything else
 
 
 --| Changelog
+
+1.2.2
+	Fix not being able to repack bnds with roots
 
 1.2.1
 	Fix LUAINFO not working on files with 2 or fewer goals
