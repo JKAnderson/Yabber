@@ -1,6 +1,5 @@
 ﻿using SoulsFormats;
 using System;
-using System.IO;
 using System.Xml;
 
 namespace Yabber
@@ -56,8 +55,7 @@ namespace Yabber
             }
 
             string outPath = sourceFile.Replace(".fmg.xml", ".fmg");
-            if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
-                File.Copy(outPath, outPath + ".bak");
+            YBUtil.Backup(outPath);
             fmg.Write(outPath);
         }
     }

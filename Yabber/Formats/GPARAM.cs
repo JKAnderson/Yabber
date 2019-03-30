@@ -1,7 +1,7 @@
 ﻿using SoulsFormats;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Xml;
@@ -12,19 +12,30 @@ namespace Yabber
     {
         public static void Unpack(this GPARAM gparam, string sourceFile)
         {
-            XmlWriterSettings xws = new XmlWriterSettings();
+            var xws = new XmlWriterSettings();
             xws.Indent = true;
             XmlWriter xw = XmlWriter.Create($"{sourceFile}.xml", xws);
 
             xw.WriteStartElement("gparam");
             xw.WriteElementString("compression", gparam.Compression.ToString());
-            xw.WriteElementString("unk1", gparam.Unk1.ToString());
+            xw.WriteElementString("game", gparam.Game.ToString());
+            xw.WriteElementString("unk0C", gparam.Unk0C.ToString());
+            xw.WriteElementString("unk14", gparam.Unk14.ToString());
+            if (gparam.Game == GPARAM.GPGame.Sekiro)
+                xw.WriteElementString("unk50", gparam.Unk50.ToString());
+
             xw.WriteStartElement("groups");
             foreach (GPARAM.Group group in gparam.Groups)
             {
                 xw.WriteStartElement("group");
                 xw.WriteAttributeString("name1", group.Name1);
                 xw.WriteAttributeString("name2", group.Name2);
+
+                xw.WriteStartElement("comments");
+                foreach (string comment in group.Comments)
+                    xw.WriteElementString("comment", comment);
+                xw.WriteEndElement();
+
                 foreach (GPARAM.Param param in group.Params)
                 {
                     xw.WriteStartElement("param");
@@ -34,14 +45,19 @@ namespace Yabber
                     for (var i = 0; i < param.Values.Count; i++)
                     {
                         xw.WriteStartElement("value");
-                        xw.WriteAttributeString("id", param.Unk1Values[i].ToString());
-                        if (i < group.Comments.Count)
-                            xw.WriteAttributeString("comment", group.Comments[i]);
+                        xw.WriteAttributeString("id", param.ValueIDs[i].ToString());
+                        if (gparam.Game == GPARAM.GPGame.Sekiro)
+                            xw.WriteAttributeString("float", param.UnkFloats[i].ToString());
 
                         if (param.Type == GPARAM.ParamType.Float2)
                         {
                             var value = (Vector2)param.Values[i];
                             xw.WriteString($"{value.X} {value.Y}");
+                        }
+                        else if (param.Type == GPARAM.ParamType.Float3)
+                        {
+                            var value = (Vector3)param.Values[i];
+                            xw.WriteString($"{value.X} {value.Y} {value.Z}");
                         }
                         else if (param.Type == GPARAM.ParamType.Float4)
                         {
@@ -66,19 +82,21 @@ namespace Yabber
             xw.WriteEndElement();
 
             xw.WriteStartElement("unk3s");
-            foreach (var unk in gparam.Unk3s)
+            foreach (var unk3 in gparam.Unk3s)
             {
                 xw.WriteStartElement("unk3");
-                xw.WriteAttributeString("id", unk.ID.ToString());
-                foreach (var val in unk.Values)
+                xw.WriteAttributeString("group_index", unk3.GroupIndex.ToString());
+                if (gparam.Game == GPARAM.GPGame.Sekiro)
+                    xw.WriteAttributeString("unk0C", unk3.Unk0C.ToString());
+                foreach (var id in unk3.ValueIDs)
                 {
-                    xw.WriteElementString("value", val.ToString());
+                    xw.WriteElementString("value_id", id.ToString());
                 }
                 xw.WriteEndElement();
             }
             xw.WriteEndElement();
 
-            xw.WriteElementString("unkBlock", Convert.ToBase64String(gparam.UnkBlock2));
+            xw.WriteElementString("unk_block_2", Convert.ToBase64String(gparam.UnkBlock2));
 
             xw.WriteEndElement();
             xw.Close();
@@ -86,30 +104,38 @@ namespace Yabber
 
         public static void Repack(string sourceFile)
         {
-            GPARAM gparam = new GPARAM();
-            XmlDocument xml = new XmlDocument();
+            var gparam = new GPARAM();
+            var xml = new XmlDocument();
             xml.Load(sourceFile);
             Enum.TryParse(xml.SelectSingleNode("gparam/compression")?.InnerText ?? "None", out gparam.Compression);
-            gparam.Unk1 = int.Parse(xml.SelectSingleNode("gparam/unk1").InnerText);
+            Enum.TryParse(xml.SelectSingleNode("gparam/game").InnerText, out gparam.Game);
+            gparam.Unk0C = int.Parse(xml.SelectSingleNode("gparam/unk0C").InnerText);
+            gparam.Unk14 = int.Parse(xml.SelectSingleNode("gparam/unk14").InnerText);
+            if (gparam.Game == GPARAM.GPGame.Sekiro)
+                gparam.Unk50 = float.Parse(xml.SelectSingleNode("gparam/unk50").InnerText);
+
             foreach (XmlNode groupNode in xml.SelectNodes("gparam/groups/group"))
             {
                 string groupName1 = groupNode.Attributes["name1"].InnerText;
                 string groupName2 = groupNode.Attributes["name2"].InnerText;
                 var group = new GPARAM.Group(groupName1, groupName2);
-                bool addedComments = false;
+                foreach (XmlNode commentNode in groupNode.SelectNodes("comments/comment"))
+                    group.Comments.Add(commentNode.InnerText);
+
                 foreach (XmlNode paramNode in groupNode.SelectNodes("param"))
                 {
                     string paramName1 = paramNode.Attributes["name1"].InnerText;
                     string paramName2 = paramNode.Attributes["name2"].InnerText;
                     var paramType = (GPARAM.ParamType)Enum.Parse(typeof(GPARAM.ParamType), paramNode.Attributes["type"].InnerText);
                     var param = new GPARAM.Param(paramName1, paramName2, paramType);
+                    if (gparam.Game == GPARAM.GPGame.Sekiro)
+                        param.UnkFloats = new List<float>();
+
                     foreach (XmlNode value in paramNode.SelectNodes("value"))
                     {
-                        param.Unk1Values.Add(int.Parse(value.Attributes["id"].InnerText));
-                        if (!addedComments)
-                        {
-                            group.Comments.Add(value.Attributes["comment"].InnerText);
-                        }
+                        param.ValueIDs.Add(int.Parse(value.Attributes["id"].InnerText));
+                        if (gparam.Game == GPARAM.GPGame.Sekiro)
+                            param.UnkFloats.Add(float.Parse(value.Attributes["float"].InnerText));
 
                         switch (param.Type)
                         {
@@ -135,13 +161,18 @@ namespace Yabber
                                 break;
 
                             case GPARAM.ParamType.Float2:
-                                float[] arr = value.InnerText.Split(' ').Select(f => float.Parse(f)).ToArray();
-                                param.Values.Add(new Vector2(arr[0], arr[1]));
+                                float[] vec2 = value.InnerText.Split(' ').Select(f => float.Parse(f)).ToArray();
+                                param.Values.Add(new Vector2(vec2[0], vec2[1]));
+                                break;
+
+                            case GPARAM.ParamType.Float3:
+                                float[] vec3 = value.InnerText.Split(' ').Select(f => float.Parse(f)).ToArray();
+                                param.Values.Add(new Vector3(vec3[0], vec3[1], vec3[1]));
                                 break;
 
                             case GPARAM.ParamType.Float4:
-                                float[] arr2 = value.InnerText.Split(' ').Select(f => float.Parse(f)).ToArray();
-                                param.Values.Add(new Vector4(arr2[0], arr2[1], arr2[2], arr2[3]));
+                                float[] vec4 = value.InnerText.Split(' ').Select(f => float.Parse(f)).ToArray();
+                                param.Values.Add(new Vector4(vec4[0], vec4[1], vec4[2], vec4[3]));
                                 break;
 
                             case GPARAM.ParamType.IntA:
@@ -157,39 +188,33 @@ namespace Yabber
                                 break;
                         }
                     }
-                    addedComments = true;
                     group.Params.Add(param);
                 }
                 gparam.Groups.Add(group);
             }
 
-            foreach (XmlNode unk in xml.SelectNodes("gparam/unk3s/unk3"))
+            foreach (XmlNode unk3Node in xml.SelectNodes("gparam/unk3s/unk3"))
             {
-                int id = int.Parse(unk.Attributes["id"].InnerText);
-                var unk3 = new GPARAM.Unk3(id);
-                foreach (XmlNode value in unk.SelectNodes("value"))
+                int groupIndex = int.Parse(unk3Node.Attributes["group_index"].InnerText);
+                var unk3 = new GPARAM.Unk3(groupIndex);
+                if (gparam.Game == GPARAM.GPGame.Sekiro)
+                    unk3.Unk0C = int.Parse(unk3Node.Attributes["unk0C"].InnerText);
+                foreach (XmlNode value in unk3Node.SelectNodes("value_id"))
                 {
-                    unk3.Values.Add(int.Parse(value.InnerText));
+                    unk3.ValueIDs.Add(int.Parse(value.InnerText));
                 }
                 gparam.Unk3s.Add(unk3);
             }
 
-            gparam.UnkBlock2 = Convert.FromBase64String(xml.SelectSingleNode("gparam/unkBlock").InnerText);
+            gparam.UnkBlock2 = Convert.FromBase64String(xml.SelectSingleNode("gparam/unk_block_2").InnerText);
 
+            string outPath;
             if (sourceFile.EndsWith(".gparam.xml"))
-            {
-                string outPath = sourceFile.Replace(".gparam.xml", ".gparam");
-                if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
-                    File.Copy(outPath, outPath + ".bak");
-                gparam.Write(outPath);
-            }
+                outPath = sourceFile.Replace(".gparam.xml", ".gparam");
             else
-            {
-                string outPath = sourceFile.Replace(".gparam.dcx.xml", ".gparam.dcx");
-                if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
-                    File.Copy(outPath, outPath + ".bak");
-                gparam.Write(outPath, DCX.Type.DarkSouls3);
-            }
+                outPath = sourceFile.Replace(".gparam.dcx.xml", ".gparam.dcx");
+            YBUtil.Backup(outPath);
+            gparam.Write(outPath);
         }
     }
 }

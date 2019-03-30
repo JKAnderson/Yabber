@@ -64,9 +64,7 @@ namespace Yabber
             }
 
             string outPath = $"{targetDir}\\{filename}";
-            if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
-                File.Move(outPath, outPath + ".bak");
-
+            YBUtil.Backup(outPath);
             tpf.Write(outPath);
         }
     }

@@ -44,13 +44,9 @@ namespace Yabber
             YBinder.ReadBinderFiles(bxf, xml.SelectSingleNode("bxf3/files"), sourceDir);
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
-            if (File.Exists(bhdPath) && !File.Exists(bhdPath + ".bak"))
-                File.Move(bhdPath, bhdPath + ".bak");
-
+            YBUtil.Backup(bhdPath);
             string bdtPath = $"{targetDir}\\{bdtFilename}";
-            if (File.Exists(bdtPath) && !File.Exists(bdtPath + ".bak"))
-                File.Move(bdtPath, bdtPath + ".bak");
-
+            YBUtil.Backup(bdtPath);
             bxf.Write(bhdPath, bdtPath);
         }
     }

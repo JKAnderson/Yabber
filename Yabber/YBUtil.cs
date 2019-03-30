@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 
 namespace Yabber
@@ -39,6 +40,11 @@ namespace Yabber
             @"N:\SPRJ\data\INTERROOT_win64\",
             @"N:\SPRJ\data\",
             @"N:\SPRJ\",
+            // Sekiro
+            @"N:\NTC\data\Target\INTERROOT_win64\",
+            @"N:\NTC\data\Target\",
+            @"N:\NTC\data\",
+            @"N:\NTC\",
         };
 
         /// <summary>
@@ -70,6 +76,12 @@ namespace Yabber
 
             root = "";
             return path;
+        }
+
+        public static void Backup(string path)
+        {
+            if (File.Exists(path) && !File.Exists(path + ".bak"))
+                File.Move(path, path + ".bak");
         }
     }
 }

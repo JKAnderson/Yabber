@@ -1,5 +1,5 @@
 
---| Yabber 1.2.2
+--| Yabber 1.3
 --| By TKGP
 --| https://www.nexusmods.com/darksouls3/mods/305
 --| https://github.com/JKAnderson/Yabber

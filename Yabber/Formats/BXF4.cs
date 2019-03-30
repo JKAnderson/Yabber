@@ -1,10 +1,6 @@
 ﻿using SoulsFormats;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Yabber
@@ -69,13 +65,9 @@ namespace Yabber
             YBinder.ReadBinderFiles(bxf, xml.SelectSingleNode("bxf4/files"), sourceDir);
 
             string bhdPath = $"{targetDir}\\{bhdFilename}";
-            if (File.Exists(bhdPath) && !File.Exists(bhdPath + ".bak"))
-                File.Move(bhdPath, bhdPath + ".bak");
-
+            YBUtil.Backup(bhdPath);
             string bdtPath = $"{targetDir}\\{bdtFilename}";
-            if (File.Exists(bdtPath) && !File.Exists(bdtPath + ".bak"))
-                File.Move(bdtPath, bdtPath + ".bak");
-
+            YBUtil.Backup(bdtPath);
             bxf.Write(bhdPath, bdtPath);
         }
     }

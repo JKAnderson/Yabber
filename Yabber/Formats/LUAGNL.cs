@@ -1,5 +1,4 @@
 ﻿using SoulsFormats;
-using System.IO;
 using System.Xml;
 
 namespace Yabber
@@ -40,8 +39,7 @@ namespace Yabber
             }
 
             string outPath = sourceFile.Replace(".luagnl.xml", ".luagnl");
-            if (File.Exists(outPath) && !File.Exists(outPath + ".bak"))
-                File.Copy(outPath, outPath + ".bak");
+            YBUtil.Backup(outPath);
             gnl.Write(outPath);
         }
     }
