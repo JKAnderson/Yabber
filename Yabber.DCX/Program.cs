@@ -39,6 +39,11 @@ namespace Yabber
                         pause |= Compress(path);
                     }
                 }
+                catch (DllNotFoundException ex) when (ex.Message.Contains("oo2core_6_win64.dll"))
+                {
+                    Console.WriteLine("In order to decompress .dcx files from Sekiro, you must copy oo2core_6_win64.dll from Sekiro into Yabber's lib folder.");
+                    pause = true;
+                }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Unhandled exception: {ex}");
