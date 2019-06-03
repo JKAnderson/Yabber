@@ -9,7 +9,7 @@ Requires [.NET 4.7.2](https://www.microsoft.com/net/download/thank-you/net472) -
 Please see the included readme for detailed instructions.
 
 # Contributors
-*katalash* - GPARAM support
+*katalash* - GPARAM support  
 *TKGP* - Everything else
 
 # Changelog
