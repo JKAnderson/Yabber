@@ -1,6 +1,8 @@
 ﻿using SoulsFormats;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Yabber
@@ -38,7 +40,6 @@ namespace Yabber
                     }
                     else if (File.Exists(path))
                     {
-
                         pause |= UnpackFile(path);
                     }
                     else
@@ -51,6 +52,19 @@ namespace Yabber
                 {
                     Console.WriteLine("In order to decompress .dcx files from Sekiro, you must copy oo2core_6_win64.dll from Sekiro into Yabber's lib folder.");
                     pause = true;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    using (Process current = Process.GetCurrentProcess())
+                    {
+                        var admin = new Process();
+                        admin.StartInfo = current.StartInfo;
+                        admin.StartInfo.FileName = current.MainModule.FileName;
+                        admin.StartInfo.Arguments = Environment.CommandLine.Replace($"\"{Environment.GetCommandLineArgs()[0]}\"", "");
+                        admin.StartInfo.Verb = "runas";
+                        admin.Start();
+                        return;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -180,13 +194,14 @@ namespace Yabber
                     Console.WriteLine($"Repacking FMG: {filename}...");
                     YFMG.Repack(sourceFile);
                 }
-                else if (sourceFile.EndsWith(".gparam"))
+                else if (GPARAM.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking GPARAM: {filename}...");
                     GPARAM gparam = GPARAM.Read(sourceFile);
                     gparam.Unpack(sourceFile);
                 }
-                else if (sourceFile.EndsWith(".gparam.xml") || sourceFile.EndsWith(".gparam.dcx.xml"))
+                else if (sourceFile.EndsWith(".gparam.xml") || sourceFile.EndsWith(".gparam.dcx.xml")
+                    || sourceFile.EndsWith(".fltparam.xml") || sourceFile.EndsWith(".fltparam.dcx.xml"))
                 {
                     Console.WriteLine($"Repacking GPARAM: {filename}...");
                     YGPARAM.Repack(sourceFile);

@@ -1,5 +1,6 @@
 ﻿using SoulsFormats;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -43,6 +44,19 @@ namespace Yabber
                 {
                     Console.WriteLine("In order to decompress .dcx files from Sekiro, you must copy oo2core_6_win64.dll from Sekiro into Yabber's lib folder.");
                     pause = true;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    using (Process current = Process.GetCurrentProcess())
+                    {
+                        var admin = new Process();
+                        admin.StartInfo = current.StartInfo;
+                        admin.StartInfo.FileName = current.MainModule.FileName;
+                        admin.StartInfo.Arguments = Environment.CommandLine.Replace($"\"{Environment.GetCommandLineArgs()[0]}\"", "");
+                        admin.StartInfo.Verb = "runas";
+                        admin.Start();
+                        return;
+                    }
                 }
                 catch (Exception ex)
                 {
