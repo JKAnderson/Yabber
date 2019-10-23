@@ -41,40 +41,50 @@ namespace Yabber
             @"N:\SPRJ\data\",
             @"N:\SPRJ\",
             // Sekiro
+            @"N:\NTC\data\Target\INTERROOT_win64_havok\",
             @"N:\NTC\data\Target\INTERROOT_win64\",
             @"N:\NTC\data\Target\",
             @"N:\NTC\data\",
             @"N:\NTC\",
         };
 
+        private static readonly Regex DriveRx = new Regex(@"^(\w\:\\)(.+)$");
+        private static readonly Regex SlashRx = new Regex(@"^(\\+)(.+)$");
+
         /// <summary>
         /// Removes common network path roots if present.
         /// </summary>
         public static string UnrootBNDPath(string path, out string root)
         {
+            root = "";
             foreach (string pathRoot in pathRoots)
             {
                 if (path.ToLower().StartsWith(pathRoot.ToLower()))
                 {
                     root = path.Substring(0, pathRoot.Length);
-                    return path.Substring(pathRoot.Length);
+                    path = path.Substring(pathRoot.Length);
+                    break;
                 }
             }
 
-            Match drive = Regex.Match(path, @"^(\w\:\\)(.+)$");
+            Match drive = DriveRx.Match(path);
             if (drive.Success)
             {
                 root = drive.Groups[1].Value;
-                return drive.Groups[2].Value;
+                path = drive.Groups[2].Value;
             }
 
-            if (path.StartsWith(@"\"))
+            return RemoveLeadingBackslashes(path, ref root);
+        }
+
+        private static string RemoveLeadingBackslashes(string path, ref string root)
+        {
+            Match slash = SlashRx.Match(path);
+            if (slash.Success)
             {
-                root = @"\";
-                return path.Substring(1);
+                root += slash.Groups[1].Value;
+                path = slash.Groups[2].Value;
             }
-
-            root = "";
             return path;
         }
 
