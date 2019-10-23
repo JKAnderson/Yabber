@@ -40,7 +40,7 @@ namespace Yabber
             string bhdFilename = xml.SelectSingleNode("bxf4/bhd_filename").InnerText;
             string bdtFilename = xml.SelectSingleNode("bxf4/bdt_filename").InnerText;
             bxf.Version = xml.SelectSingleNode("bxf4/version").InnerText;
-            bxf.Format = (Binder.Format)Enum.Parse(typeof(Binder.Format), xml.SelectSingleNode("bxf4/version").InnerText);
+            bxf.Format = (Binder.Format)Enum.Parse(typeof(Binder.Format), xml.SelectSingleNode("bxf4/format").InnerText);
             bxf.BigEndian = bool.Parse(xml.SelectSingleNode("bxf4/bigendian").InnerText);
             bxf.BitBigEndian = bool.Parse(xml.SelectSingleNode("bxf4/bitbigendian").InnerText);
             bxf.Unicode = bool.Parse(xml.SelectSingleNode("bxf4/unicode").InnerText);
