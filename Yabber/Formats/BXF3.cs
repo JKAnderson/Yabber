@@ -1,4 +1,5 @@
 ﻿using SoulsFormats;
+using System;
 using System.IO;
 using System.Xml;
 
@@ -9,20 +10,17 @@ namespace Yabber
         public static void Unpack(this BXF3 bxf, string bhdName, string bdtName, string targetDir)
         {
             Directory.CreateDirectory(targetDir);
-            XmlWriterSettings xws = new XmlWriterSettings();
+            var xws = new XmlWriterSettings();
             xws.Indent = true;
-            XmlWriter xw = XmlWriter.Create($"{targetDir}\\_yabber-bxf3.xml", xws);
+            var xw = XmlWriter.Create($"{targetDir}\\_yabber-bxf3.xml", xws);
             xw.WriteStartElement("bxf3");
 
-            xw.WriteStartElement("bhd");
-            xw.WriteElementString("filename", bhdName);
-            xw.WriteElementString("timestamp", bxf.BHDTimestamp);
-            xw.WriteEndElement();
-
-            xw.WriteStartElement("bdt");
-            xw.WriteElementString("filename", bdtName);
-            xw.WriteElementString("timestamp", bxf.BDTTimestamp);
-            xw.WriteEndElement();
+            xw.WriteElementString("bhd_filename", bhdName);
+            xw.WriteElementString("bdt_filename", bdtName);
+            xw.WriteElementString("version", bxf.Version);
+            xw.WriteElementString("format", bxf.Format.ToString());
+            xw.WriteElementString("bigendian", bxf.BigEndian.ToString());
+            xw.WriteElementString("bitbigendian", bxf.BitBigEndian.ToString());
 
             YBinder.WriteBinderFiles(bxf, xw, targetDir);
             xw.WriteEndElement();
@@ -31,15 +29,16 @@ namespace Yabber
 
         public static void Repack(string sourceDir, string targetDir)
         {
-            BXF3 bxf = new BXF3();
-            XmlDocument xml = new XmlDocument();
+            var bxf = new BXF3();
+            var xml = new XmlDocument();
             xml.Load($"{sourceDir}\\_yabber-bxf3.xml");
 
-            string bhdFilename = xml.SelectSingleNode("bxf3/bhd/filename").InnerText;
-            bxf.BHDTimestamp = xml.SelectSingleNode("bxf3/bhd/timestamp").InnerText;
-
-            string bdtFilename = xml.SelectSingleNode("bxf3/bdt/filename").InnerText;
-            bxf.BDTTimestamp = xml.SelectSingleNode("bxf3/bdt/timestamp").InnerText;
+            string bhdFilename = xml.SelectSingleNode("bxf3/bhd_filename").InnerText;
+            string bdtFilename = xml.SelectSingleNode("bxf3/bdt_filename").InnerText;
+            bxf.Version = xml.SelectSingleNode("bxf3/version").InnerText;
+            bxf.Format = (Binder.Format)Enum.Parse(typeof(Binder.Format), xml.SelectSingleNode("bxf3/format").InnerText);
+            bxf.BigEndian = bool.Parse(xml.SelectSingleNode("bxf3/bigendian").InnerText);
+            bxf.BitBigEndian = bool.Parse(xml.SelectSingleNode("bxf3/bitbigendian").InnerText);
 
             YBinder.ReadBinderFiles(bxf, xml.SelectSingleNode("bxf3/files"), sourceDir);
 

@@ -15,25 +15,16 @@ namespace Yabber
             XmlWriter xw = XmlWriter.Create($"{targetDir}\\_yabber-bxf4.xml", xws);
             xw.WriteStartElement("bxf4");
 
-            xw.WriteStartElement("bhd");
-            xw.WriteElementString("filename", bhdName);
-            xw.WriteElementString("timestamp", bxf.BHD.Timestamp);
-            xw.WriteElementString("format", $"0x{(byte)bxf.BHD.Format:X2}");
-            xw.WriteElementString("unicode", bxf.BHD.Unicode.ToString());
-            xw.WriteElementString("bigendian", bxf.BHD.BigEndian.ToString());
-            xw.WriteElementString("flag1", bxf.BHD.Flag1.ToString());
-            xw.WriteElementString("flag2", bxf.BHD.Flag2.ToString());
-            xw.WriteElementString("extended", $"0x{bxf.BHD.Extended:X2}");
-            xw.WriteEndElement();
-
-            xw.WriteStartElement("bdt");
-            xw.WriteElementString("filename", bdtName);
-            xw.WriteElementString("timestamp", bxf.BDT.Timestamp);
-            xw.WriteElementString("bigendian", bxf.BDT.BigEndian.ToString());
-            xw.WriteElementString("flag1", bxf.BDT.Flag1.ToString());
-            xw.WriteElementString("flag2", bxf.BDT.Flag2.ToString());
-            xw.WriteElementString("unk1", $"0x{bxf.BDT.Unk1:X16}");
-            xw.WriteEndElement();
+            xw.WriteElementString("bhd_filename", bhdName);
+            xw.WriteElementString("bdt_filename", bdtName);
+            xw.WriteElementString("version", bxf.Version);
+            xw.WriteElementString("format", bxf.Format.ToString());
+            xw.WriteElementString("bigendian", bxf.BigEndian.ToString());
+            xw.WriteElementString("bitbigendian", bxf.BitBigEndian.ToString());
+            xw.WriteElementString("unicode", bxf.Unicode.ToString());
+            xw.WriteElementString("extended", $"0x{bxf.Extended:X2}");
+            xw.WriteElementString("unk04", bxf.Unk04.ToString());
+            xw.WriteElementString("unk05", bxf.Unk05.ToString());
 
             YBinder.WriteBinderFiles(bxf, xw, targetDir);
             xw.WriteEndElement();
@@ -46,21 +37,16 @@ namespace Yabber
             XmlDocument xml = new XmlDocument();
             xml.Load($"{sourceDir}\\_yabber-bxf4.xml");
 
-            string bhdFilename = xml.SelectSingleNode("bxf4/bhd/filename").InnerText;
-            bxf.BHD.Timestamp = xml.SelectSingleNode("bxf4/bhd/timestamp").InnerText;
-            bxf.BHD.Format = (Binder.Format)Convert.ToByte(xml.SelectSingleNode("bxf4/bhd/format").InnerText, 16);
-            bxf.BHD.Unicode = bool.Parse(xml.SelectSingleNode("bxf4/bhd/unicode").InnerText);
-            bxf.BHD.BigEndian = bool.Parse(xml.SelectSingleNode("bxf4/bhd/bigendian").InnerText);
-            bxf.BHD.Flag1 = bool.Parse(xml.SelectSingleNode("bxf4/bhd/flag1").InnerText);
-            bxf.BHD.Flag2 = bool.Parse(xml.SelectSingleNode("bxf4/bhd/flag2").InnerText);
-            bxf.BHD.Extended = Convert.ToByte(xml.SelectSingleNode("bxf4/bhd/extended").InnerText, 16);
-
-            string bdtFilename = xml.SelectSingleNode("bxf4/bdt/filename").InnerText;
-            bxf.BDT.Timestamp = xml.SelectSingleNode("bxf4/bdt/timestamp").InnerText;
-            bxf.BDT.BigEndian = bool.Parse(xml.SelectSingleNode("bxf4/bdt/bigendian").InnerText);
-            bxf.BDT.Flag1 = bool.Parse(xml.SelectSingleNode("bxf4/bdt/flag1").InnerText);
-            bxf.BDT.Flag2 = bool.Parse(xml.SelectSingleNode("bxf4/bdt/flag2").InnerText);
-            bxf.BDT.Unk1 = Convert.ToInt64(xml.SelectSingleNode("bxf4/bdt/unk1").InnerText, 16);
+            string bhdFilename = xml.SelectSingleNode("bxf4/bhd_filename").InnerText;
+            string bdtFilename = xml.SelectSingleNode("bxf4/bdt_filename").InnerText;
+            bxf.Version = xml.SelectSingleNode("bxf4/version").InnerText;
+            bxf.Format = (Binder.Format)Enum.Parse(typeof(Binder.Format), xml.SelectSingleNode("bxf4/version").InnerText);
+            bxf.BigEndian = bool.Parse(xml.SelectSingleNode("bxf4/bigendian").InnerText);
+            bxf.BitBigEndian = bool.Parse(xml.SelectSingleNode("bxf4/bitbigendian").InnerText);
+            bxf.Unicode = bool.Parse(xml.SelectSingleNode("bxf4/unicode").InnerText);
+            bxf.Extended = Convert.ToByte(xml.SelectSingleNode("bxf4/extended").InnerText, 16);
+            bxf.Unk04 = bool.Parse(xml.SelectSingleNode("bxf4/unk04").InnerText);
+            bxf.Unk05 = bool.Parse(xml.SelectSingleNode("bxf4/unk05").InnerText);
 
             YBinder.ReadBinderFiles(bxf, xml.SelectSingleNode("bxf4/files"), sourceDir);
 

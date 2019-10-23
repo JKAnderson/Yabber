@@ -18,11 +18,11 @@ namespace Yabber
 
                 string root = "";
                 string path;
-                if (Binder.HasName(bnd.Format))
+                if (Binder.HasNames(bnd.Format))
                 {
                     path = YBUtil.UnrootBNDPath(file.Name, out root);
                 }
-                else if (Binder.HasID(bnd.Format))
+                else if (Binder.HasIDs(bnd.Format))
                 {
                     path = file.ID.ToString();
                 }
@@ -32,9 +32,9 @@ namespace Yabber
                 }
 
                 xw.WriteStartElement("file");
-                xw.WriteElementString("flags", $"0x{(byte)file.Flags:X2}");
+                xw.WriteElementString("flags", file.Flags.ToString());
 
-                if (Binder.HasID(bnd.Format))
+                if (Binder.HasIDs(bnd.Format))
                     xw.WriteElementString("id", file.ID.ToString());
 
                 if (root != "")
@@ -53,6 +53,10 @@ namespace Yabber
                 {
                     pathCounts[path] = 1;
                 }
+
+                if (file.CompressionType != DCX.Type.Zlib)
+                    xw.WriteElementString("compression_type", file.CompressionType.ToString());
+
                 xw.WriteEndElement();
 
                 string outPath = $@"{targetDir}\{Path.GetDirectoryName(path)}\{Path.GetFileNameWithoutExtension(path)}{suffix}{Path.GetExtension(path)}";
@@ -69,32 +73,32 @@ namespace Yabber
                 if (fileNode.SelectSingleNode("path") == null)
                     throw new FriendlyException("File node missing path tag.");
 
-                string strFlags = fileNode.SelectSingleNode("flags")?.InnerText ?? "0x40";
+                string strFlags = fileNode.SelectSingleNode("flags")?.InnerText ?? "Flag1";
                 string strID = fileNode.SelectSingleNode("id")?.InnerText ?? "-1";
                 string root = fileNode.SelectSingleNode("root")?.InnerText ?? "";
                 string path = fileNode.SelectSingleNode("path").InnerText;
                 string suffix = fileNode.SelectSingleNode("suffix")?.InnerText ?? "";
+                string strCompression = fileNode.SelectSingleNode("compression_type")?.InnerText ?? DCX.Type.Zlib.ToString();
                 string name = root + path;
 
-                Binder.FileFlags flags;
-                try
-                {
-                    flags = (Binder.FileFlags)Convert.ToByte(strFlags, 16);
-                }
-                catch
-                {
-                    throw new FriendlyException($"Could not parse file flags: {strFlags}\nFlags must be a hex value.");
-                }
+                if (!Enum.TryParse(strFlags, out Binder.FileFlags flags))
+                    throw new FriendlyException($"Could not parse file flags: {strFlags}\nFlags must be comma-separated list of flags.");
 
                 if (!int.TryParse(strID, out int id))
                     throw new FriendlyException($"Could not parse file ID: {strID}\nID must be a 32-bit signed integer.");
+
+                if (!Enum.TryParse(strCompression, out DCX.Type compressionType))
+                    throw new FriendlyException($"Could not parse compression type: {strCompression}\nCompression type must be a valid DCX Type.");
 
                 string inPath = $@"{sourceDir}\{Path.GetDirectoryName(path)}\{Path.GetFileNameWithoutExtension(path)}{suffix}{Path.GetExtension(path)}";
                 if (!File.Exists(inPath))
                     throw new FriendlyException($"File not found: {inPath}");
 
                 byte[] bytes = File.ReadAllBytes(inPath);
-                bnd.Files.Add(new BinderFile(flags, id, name, bytes));
+                bnd.Files.Add(new BinderFile(flags, id, name, bytes)
+                {
+                    CompressionType = compressionType
+                });
             }
         }
     }
