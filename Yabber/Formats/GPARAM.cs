@@ -228,7 +228,9 @@ namespace Yabber
                 gparam.Unk3s.Add(unk3);
             }
 
-            gparam.UnkBlock2 = xml.SelectSingleNode("gparam/unk_block_2").InnerText.Split(' ').Select(s => Convert.ToByte(s, 16)).ToArray();
+            gparam.UnkBlock2 = xml.SelectSingleNode("gparam/unk_block_2").InnerText
+                .Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => Convert.ToByte(s, 16)).ToArray();
 
             string outPath;
             if (sourceFile.EndsWith(".gparam.xml"))
