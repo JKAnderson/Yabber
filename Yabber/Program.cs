@@ -1,8 +1,8 @@
 ﻿using SoulsFormats;
+using SoulsFormats.AC4;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 
 namespace Yabber
@@ -65,6 +65,11 @@ namespace Yabber
                         admin.Start();
                         return;
                     }
+                }
+                catch (FriendlyException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                    pause = true;
                 }
                 catch (Exception ex)
                 {
@@ -233,6 +238,12 @@ namespace Yabber
                     Console.WriteLine($"Unpacking TPF: {filename}...");
                     TPF tpf = TPF.Read(sourceFile);
                     tpf.Unpack(filename, targetDir);
+                }
+                else if (Zero3.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking 000: {filename}...");
+                    Zero3 z3 = Zero3.Read(sourceFile);
+                    z3.Unpack(targetDir);
                 }
                 else
                 {

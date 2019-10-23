@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\SoulsFormats\SoulsFormats\SoulsFormats.csproj">
-      <Project>{22C664BD-877B-44DF-8ECF-2808522469A8}</Project>
+      <Project>{e6064585-8742-44a9-afbc-75288ad42527}</Project>
       <Name>SoulsFormats</Name>
     </ProjectReference>
   </ItemGroup>
