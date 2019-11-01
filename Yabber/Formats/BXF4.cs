@@ -7,12 +7,12 @@ namespace Yabber
 {
     static class YBXF4
     {
-        public static void Unpack(this BXF4 bxf, string bhdName, string bdtName, string targetDir)
+        public static void Unpack(this BXF4Reader bxf, string bhdName, string bdtName, string targetDir)
         {
             Directory.CreateDirectory(targetDir);
-            XmlWriterSettings xws = new XmlWriterSettings();
+            var xws = new XmlWriterSettings();
             xws.Indent = true;
-            XmlWriter xw = XmlWriter.Create($"{targetDir}\\_yabber-bxf4.xml", xws);
+            var xw = XmlWriter.Create($"{targetDir}\\_yabber-bxf4.xml", xws);
             xw.WriteStartElement("bxf4");
 
             xw.WriteElementString("bhd_filename", bhdName);

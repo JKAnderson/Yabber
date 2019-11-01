@@ -102,16 +102,20 @@ namespace Yabber
                 if (BND3.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking BND3: {filename}...");
-                    BND3 bnd = BND3.Read(bytes);
-                    bnd.Compression = compression;
-                    bnd.Unpack(filename, targetDir);
+                    using (var bnd = new BND3Reader(bytes))
+                    {
+                        bnd.Compression = compression;
+                        bnd.Unpack(filename, targetDir);
+                    }
                 }
                 else if (BND4.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking BND4: {filename}...");
-                    BND4 bnd = BND4.Read(bytes);
-                    bnd.Compression = compression;
-                    bnd.Unpack(filename, targetDir);
+                    using (var bnd = new BND4Reader(bytes))
+                    {
+                        bnd.Compression = compression;
+                        bnd.Unpack(filename, targetDir);
+                    }
                 }
                 else if (sourceFile.EndsWith(".fmg.dcx"))
                 {
@@ -145,14 +149,18 @@ namespace Yabber
                 if (BND3.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking BND3: {filename}...");
-                    BND3 bnd = BND3.Read(sourceFile);
-                    bnd.Unpack(filename, targetDir);
+                    using (var bnd = new BND3Reader(sourceFile))
+                    {
+                        bnd.Unpack(filename, targetDir);
+                    }
                 }
                 else if (BND4.Is(sourceFile))
                 {
                     Console.WriteLine($"Unpacking BND4: {filename}...");
-                    BND4 bnd = BND4.Read(sourceFile);
-                    bnd.Unpack(filename, targetDir);
+                    using (var bnd = new BND4Reader(sourceFile))
+                    {
+                        bnd.Unpack(filename, targetDir);
+                    }
                 }
                 else if (BXF3.IsBHD(sourceFile))
                 {
@@ -162,8 +170,10 @@ namespace Yabber
                     if (File.Exists(bdtPath))
                     {
                         Console.WriteLine($"Unpacking BXF3: {filename}...");
-                        BXF3 bxf = BXF3.Read(sourceFile, bdtPath);
-                        bxf.Unpack(filename, bdtFilename, targetDir);
+                        using (var bxf = new BXF3Reader(sourceFile, bdtPath))
+                        {
+                            bxf.Unpack(filename, bdtFilename, targetDir);
+                        }
                     }
                     else
                     {
@@ -179,8 +189,10 @@ namespace Yabber
                     if (File.Exists(bdtPath))
                     {
                         Console.WriteLine($"Unpacking BXF4: {filename}...");
-                        BXF4 bxf = BXF4.Read(sourceFile, bdtPath);
-                        bxf.Unpack(filename, bdtFilename, targetDir);
+                        using (var bxf = new BXF4Reader(sourceFile, bdtPath))
+                        {
+                            bxf.Unpack(filename, bdtFilename, targetDir);
+                        }
                     }
                     else
                     {

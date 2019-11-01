@@ -7,7 +7,7 @@ namespace Yabber
 {
     static class YBND3
     {
-        public static void Unpack(this BND3 bnd, string sourceName, string targetDir)
+        public static void Unpack(this BND3Reader bnd, string sourceName, string targetDir)
         {
             Directory.CreateDirectory(targetDir);
             var xws = new XmlWriterSettings();

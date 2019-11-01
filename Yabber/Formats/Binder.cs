@@ -8,13 +8,13 @@ namespace Yabber
 {
     static class YBinder
     {
-        public static void WriteBinderFiles(IBinder bnd, XmlWriter xw, string targetDir)
+        public static void WriteBinderFiles(BinderReader bnd, XmlWriter xw, string targetDir)
         {
             xw.WriteStartElement("files");
             var pathCounts = new Dictionary<string, int>();
             for (int i = 0; i < bnd.Files.Count; i++)
             {
-                BinderFile file = bnd.Files[i];
+                BinderFileHeader file = bnd.Files[i];
 
                 string root = "";
                 string path;
@@ -59,9 +59,10 @@ namespace Yabber
 
                 xw.WriteEndElement();
 
+                byte[] bytes = bnd.ReadFile(file);
                 string outPath = $@"{targetDir}\{Path.GetDirectoryName(path)}\{Path.GetFileNameWithoutExtension(path)}{suffix}{Path.GetExtension(path)}";
                 Directory.CreateDirectory(Path.GetDirectoryName(outPath));
-                File.WriteAllBytes(outPath, file.Bytes);
+                File.WriteAllBytes(outPath, bytes);
             }
             xw.WriteEndElement();
         }
