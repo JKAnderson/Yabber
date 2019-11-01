@@ -9,6 +9,8 @@ namespace Yabber
 {
     class Program
     {
+        private const int PROGRESS_MAX = 20;
+
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -34,18 +36,38 @@ namespace Yabber
             {
                 try
                 {
+                    int lastProgress = 0;
+                    void report(float value)
+                    {
+                        int nextProgress = (int)Math.Ceiling(value * PROGRESS_MAX);
+                        if (nextProgress > lastProgress)
+                        {
+                            for (int i = lastProgress; i < nextProgress; i++)
+                                Console.Write('.');
+                            lastProgress = nextProgress;
+                        }
+                    }
+                    IProgress<float> progress = new Progress<float>(report);
+
                     if (Directory.Exists(path))
                     {
-                        pause |= RepackDir(path);
+                        pause |= RepackDir(path, progress);
+                        
                     }
                     else if (File.Exists(path))
                     {
-                        pause |= UnpackFile(path);
+                        pause |= UnpackFile(path, progress);
                     }
                     else
                     {
                         Console.WriteLine($"File or directory not found: {path}");
                         pause = true;
+                    }
+
+                    if (lastProgress > 0)
+                    {
+                        progress.Report(1);
+                        Console.WriteLine();
                     }
                 }
                 catch (DllNotFoundException ex) when (ex.Message.Contains("oo2core_6_win64.dll"))
@@ -68,11 +90,13 @@ namespace Yabber
                 }
                 catch (FriendlyException ex)
                 {
+                    Console.WriteLine();
                     Console.WriteLine($"Error: {ex.Message}");
                     pause = true;
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine();
                     Console.WriteLine($"Unhandled exception: {ex}");
                     pause = true;
                 }
@@ -87,7 +111,7 @@ namespace Yabber
             }
         }
 
-        private static bool UnpackFile(string sourceFile)
+        private static bool UnpackFile(string sourceFile, IProgress<float> progress)
         {
             string sourceDir = Path.GetDirectoryName(sourceFile);
             string filename = Path.GetFileName(sourceFile);
@@ -105,7 +129,7 @@ namespace Yabber
                     using (var bnd = new BND3Reader(bytes))
                     {
                         bnd.Compression = compression;
-                        bnd.Unpack(filename, targetDir);
+                        bnd.Unpack(filename, targetDir, progress);
                     }
                 }
                 else if (BND4.Is(bytes))
@@ -114,7 +138,7 @@ namespace Yabber
                     using (var bnd = new BND4Reader(bytes))
                     {
                         bnd.Compression = compression;
-                        bnd.Unpack(filename, targetDir);
+                        bnd.Unpack(filename, targetDir, progress);
                     }
                 }
                 else if (sourceFile.EndsWith(".fmg.dcx"))
@@ -136,7 +160,7 @@ namespace Yabber
                     Console.WriteLine($"Unpacking TPF: {filename}...");
                     TPF tpf = TPF.Read(bytes);
                     tpf.Compression = compression;
-                    tpf.Unpack(filename, targetDir);
+                    tpf.Unpack(filename, targetDir, progress);
                 }
                 else
                 {
@@ -151,7 +175,7 @@ namespace Yabber
                     Console.WriteLine($"Unpacking BND3: {filename}...");
                     using (var bnd = new BND3Reader(sourceFile))
                     {
-                        bnd.Unpack(filename, targetDir);
+                        bnd.Unpack(filename, targetDir, progress);
                     }
                 }
                 else if (BND4.Is(sourceFile))
@@ -159,7 +183,7 @@ namespace Yabber
                     Console.WriteLine($"Unpacking BND4: {filename}...");
                     using (var bnd = new BND4Reader(sourceFile))
                     {
-                        bnd.Unpack(filename, targetDir);
+                        bnd.Unpack(filename, targetDir, progress);
                     }
                 }
                 else if (BXF3.IsBHD(sourceFile))
@@ -172,7 +196,7 @@ namespace Yabber
                         Console.WriteLine($"Unpacking BXF3: {filename}...");
                         using (var bxf = new BXF3Reader(sourceFile, bdtPath))
                         {
-                            bxf.Unpack(filename, bdtFilename, targetDir);
+                            bxf.Unpack(filename, bdtFilename, targetDir, progress);
                         }
                     }
                     else
@@ -191,7 +215,7 @@ namespace Yabber
                         Console.WriteLine($"Unpacking BXF4: {filename}...");
                         using (var bxf = new BXF4Reader(sourceFile, bdtPath))
                         {
-                            bxf.Unpack(filename, bdtFilename, targetDir);
+                            bxf.Unpack(filename, bdtFilename, targetDir, progress);
                         }
                     }
                     else
@@ -249,7 +273,7 @@ namespace Yabber
                 {
                     Console.WriteLine($"Unpacking TPF: {filename}...");
                     TPF tpf = TPF.Read(sourceFile);
-                    tpf.Unpack(filename, targetDir);
+                    tpf.Unpack(filename, targetDir, progress);
                 }
                 else if (Zero3.Is(sourceFile))
                 {
@@ -266,7 +290,7 @@ namespace Yabber
             return false;
         }
 
-        private static bool RepackDir(string sourceDir)
+        private static bool RepackDir(string sourceDir, IProgress<float> progress)
         {
             string sourceName = new DirectoryInfo(sourceDir).Name;
             string targetDir = new DirectoryInfo(sourceDir).Parent.FullName;

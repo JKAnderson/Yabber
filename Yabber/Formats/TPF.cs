@@ -7,15 +7,17 @@ namespace Yabber
 {
     static class YTPF
     {
-        public static void Unpack(this TPF tpf, string sourceName, string targetDir)
+        public static void Unpack(this TPF tpf, string sourceName, string targetDir, IProgress<float> progress)
         {
+#if !DEBUG
             if (tpf.Platform != TPF.TPFPlatform.PC)
                 throw new NotSupportedException("Yabber does not support console TPFs at the moment.");
+#endif
 
             Directory.CreateDirectory(targetDir);
-            XmlWriterSettings xws = new XmlWriterSettings();
+            var xws = new XmlWriterSettings();
             xws.Indent = true;
-            XmlWriter xw = XmlWriter.Create($"{targetDir}\\_yabber-tpf.xml", xws);
+            var xw = XmlWriter.Create($"{targetDir}\\_yabber-tpf.xml", xws);
             xw.WriteStartElement("tpf");
 
             xw.WriteElementString("filename", sourceName);
@@ -24,16 +26,18 @@ namespace Yabber
             xw.WriteElementString("flag2", $"0x{tpf.Flag2:X2}");
 
             xw.WriteStartElement("textures");
-            foreach (TPF.Texture texture in tpf.Textures)
+            for (int i = 0; i < tpf.Textures.Count; i++)
             {
+                TPF.Texture texture = tpf.Textures[i];
                 xw.WriteStartElement("texture");
                 xw.WriteElementString("name", texture.Name + ".dds");
-                xw.WriteElementString("format", $"0x{texture.Format:X2}");
+                xw.WriteElementString("format", texture.Format.ToString());
                 xw.WriteElementString("flags1", $"0x{texture.Flags1:X2}");
                 xw.WriteElementString("flags2", $"0x{texture.Flags2:X8}");
                 xw.WriteEndElement();
 
-                File.WriteAllBytes($"{targetDir}\\{texture.Name}.dds", texture.Bytes);
+                File.WriteAllBytes($"{targetDir}\\{texture.Name}.dds", texture.Headerize());
+                progress.Report((float)i / tpf.Textures.Count);
             }
             xw.WriteEndElement();
 
@@ -55,7 +59,7 @@ namespace Yabber
             foreach (XmlNode texNode in xml.SelectNodes("tpf/textures/texture"))
             {
                 string name = Path.GetFileNameWithoutExtension(texNode.SelectSingleNode("name").InnerText);
-                byte format = Convert.ToByte(texNode.SelectSingleNode("format").InnerText, 16);
+                byte format = Convert.ToByte(texNode.SelectSingleNode("format").InnerText);
                 byte flags1 = Convert.ToByte(texNode.SelectSingleNode("flags1").InnerText, 16);
                 int flags2 = Convert.ToInt32(texNode.SelectSingleNode("flags2").InnerText, 16);
 

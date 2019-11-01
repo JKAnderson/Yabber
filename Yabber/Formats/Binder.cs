@@ -8,7 +8,7 @@ namespace Yabber
 {
     static class YBinder
     {
-        public static void WriteBinderFiles(BinderReader bnd, XmlWriter xw, string targetDir)
+        public static void WriteBinderFiles(BinderReader bnd, XmlWriter xw, string targetDir, IProgress<float> progress)
         {
             xw.WriteStartElement("files");
             var pathCounts = new Dictionary<string, int>();
@@ -63,6 +63,7 @@ namespace Yabber
                 string outPath = $@"{targetDir}\{Path.GetDirectoryName(path)}\{Path.GetFileNameWithoutExtension(path)}{suffix}{Path.GetExtension(path)}";
                 Directory.CreateDirectory(Path.GetDirectoryName(outPath));
                 File.WriteAllBytes(outPath, bytes);
+                progress.Report((float)i / bnd.Files.Count);
             }
             xw.WriteEndElement();
         }

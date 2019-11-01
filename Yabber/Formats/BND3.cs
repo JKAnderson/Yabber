@@ -7,7 +7,7 @@ namespace Yabber
 {
     static class YBND3
     {
-        public static void Unpack(this BND3Reader bnd, string sourceName, string targetDir)
+        public static void Unpack(this BND3Reader bnd, string sourceName, string targetDir, IProgress<float> progress)
         {
             Directory.CreateDirectory(targetDir);
             var xws = new XmlWriterSettings();
@@ -22,7 +22,7 @@ namespace Yabber
             xw.WriteElementString("bigendian", bnd.BigEndian.ToString());
             xw.WriteElementString("bitbigendian", bnd.BitBigEndian.ToString());
             xw.WriteElementString("unk18", $"0x{bnd.Unk18:X}");
-            YBinder.WriteBinderFiles(bnd, xw, targetDir);
+            YBinder.WriteBinderFiles(bnd, xw, targetDir, progress);
 
             xw.WriteEndElement();
             xw.Close();

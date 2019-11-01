@@ -7,7 +7,7 @@ namespace Yabber
 {
     static class YBND4
     {
-        public static void Unpack(this BND4Reader bnd, string sourceName, string targetDir)
+        public static void Unpack(this BND4Reader bnd, string sourceName, string targetDir, IProgress<float> progress)
         {
             Directory.CreateDirectory(targetDir);
             var xws = new XmlWriterSettings();
@@ -25,7 +25,7 @@ namespace Yabber
             xw.WriteElementString("extended", $"0x{bnd.Extended:X2}");
             xw.WriteElementString("unk04", bnd.Unk04.ToString());
             xw.WriteElementString("unk05", bnd.Unk05.ToString());
-            YBinder.WriteBinderFiles(bnd, xw, targetDir);
+            YBinder.WriteBinderFiles(bnd, xw, targetDir, progress);
             xw.WriteEndElement();
             xw.Close();
         }
