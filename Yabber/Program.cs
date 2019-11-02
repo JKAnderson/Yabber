@@ -9,8 +9,6 @@ namespace Yabber
 {
     class Program
     {
-        private const int PROGRESS_MAX = 20;
-
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -36,14 +34,22 @@ namespace Yabber
             {
                 try
                 {
+                    int maxProgress = Console.WindowWidth - 1;
                     int lastProgress = 0;
                     void report(float value)
                     {
-                        int nextProgress = (int)Math.Ceiling(value * PROGRESS_MAX);
+                        int nextProgress = (int)Math.Ceiling(value * maxProgress);
                         if (nextProgress > lastProgress)
                         {
                             for (int i = lastProgress; i < nextProgress; i++)
-                                Console.Write('.');
+                            {
+                                if (i == 0)
+                                    Console.Write('[');
+                                else if (i == maxProgress - 1)
+                                    Console.Write(']');
+                                else
+                                    Console.Write('=');
+                            }
                             lastProgress = nextProgress;
                         }
                     }
