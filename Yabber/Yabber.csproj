@@ -69,20 +69,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Formats\Binder.cs" />
-    <Compile Include="Formats\BXF3.cs" />
-    <Compile Include="Formats\BXF4.cs" />
-    <Compile Include="Formats\BND4.cs" />
-    <Compile Include="Formats\BND3.cs" />
-    <Compile Include="Formats\GPARAM.cs" />
-    <Compile Include="Formats\FMG.cs" />
-    <Compile Include="Formats\LUAGNL.cs" />
-    <Compile Include="Formats\LUAINFO.cs" />
-    <Compile Include="Formats\Zero3.cs" />
+    <Compile Include="Formats\YBinder.cs" />
+    <Compile Include="Formats\YBXF3.cs" />
+    <Compile Include="Formats\YBXF4.cs" />
+    <Compile Include="Formats\YBND4.cs" />
+    <Compile Include="Formats\YBND3.cs" />
+    <Compile Include="Formats\YGPARAM.cs" />
+    <Compile Include="Formats\YFMG.cs" />
+    <Compile Include="Formats\YLUAGNL.cs" />
+    <Compile Include="Formats\YLUAINFO.cs" />
+    <Compile Include="Formats\YZero3.cs" />
     <Compile Include="FriendlyException.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Formats\TPF.cs" />
+    <Compile Include="Formats\YTPF.cs" />
     <Compile Include="YBUtil.cs" />
   </ItemGroup>
   <ItemGroup>
