@@ -58,7 +58,7 @@ namespace Yabber
                     if (Directory.Exists(path))
                     {
                         pause |= RepackDir(path, progress);
-                        
+
                     }
                     else if (File.Exists(path))
                     {
@@ -147,6 +147,13 @@ namespace Yabber
                         bnd.Unpack(filename, targetDir, progress);
                     }
                 }
+                else if (FFXDLSE.Is(bytes))
+                {
+                    Console.WriteLine($"Unpacking FFX: {filename}...");
+                    var ffx = FFXDLSE.Read(bytes);
+                    ffx.Compression = compression;
+                    ffx.Unpack(sourceFile);
+                }
                 else if (sourceFile.EndsWith(".fmg.dcx"))
                 {
                     Console.WriteLine($"Unpacking FMG: {filename}...");
@@ -229,6 +236,17 @@ namespace Yabber
                         Console.WriteLine($"BDT not found for BHD: {filename}");
                         return true;
                     }
+                }
+                else if (FFXDLSE.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking FFX: {filename}...");
+                    var ffx = FFXDLSE.Read(sourceFile);
+                    ffx.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".ffx.xml") || sourceFile.EndsWith(".ffx.dcx.xml"))
+                {
+                    Console.WriteLine($"Repacking FFX: {filename}...");
+                    YFFX.Repack(sourceFile);
                 }
                 else if (sourceFile.EndsWith(".fmg"))
                 {

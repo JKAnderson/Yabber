@@ -74,6 +74,7 @@
     <Compile Include="Formats\YBXF4.cs" />
     <Compile Include="Formats\YBND4.cs" />
     <Compile Include="Formats\YBND3.cs" />
+    <Compile Include="Formats\YFFX.cs" />
     <Compile Include="Formats\YGPARAM.cs" />
     <Compile Include="Formats\YFMG.cs" />
     <Compile Include="Formats\YLUAGNL.cs" />
