@@ -33,7 +33,17 @@ namespace Yabber
                 xw.WriteElementString("name", texture.Name + ".dds");
                 xw.WriteElementString("format", texture.Format.ToString());
                 xw.WriteElementString("flags1", $"0x{texture.Flags1:X2}");
-                xw.WriteElementString("flags2", $"0x{texture.Flags2:X8}");
+
+                if (texture.FloatStruct != null)
+                {
+                    xw.WriteStartElement("FloatStruct");
+                    xw.WriteAttributeString("Unk00", texture.FloatStruct.Unk00.ToString());
+                    foreach (float value in texture.FloatStruct.Values)
+                    {
+                        xw.WriteElementString("Value", value.ToString());
+                    }
+                    xw.WriteEndElement();
+                }
                 xw.WriteEndElement();
 
                 File.WriteAllBytes($"{targetDir}\\{texture.Name}.dds", texture.Headerize());
@@ -61,10 +71,21 @@ namespace Yabber
                 string name = Path.GetFileNameWithoutExtension(texNode.SelectSingleNode("name").InnerText);
                 byte format = Convert.ToByte(texNode.SelectSingleNode("format").InnerText);
                 byte flags1 = Convert.ToByte(texNode.SelectSingleNode("flags1").InnerText, 16);
-                int flags2 = Convert.ToInt32(texNode.SelectSingleNode("flags2").InnerText, 16);
+
+                TPF.FloatStruct floatStruct = null;
+                XmlNode floatsNode = texNode.SelectSingleNode("FloatStruct");
+                if (floatsNode != null)
+                {
+                    floatStruct = new TPF.FloatStruct();
+                    floatStruct.Unk00 = int.Parse(floatsNode.Attributes["Unk00"].InnerText);
+                    foreach (XmlNode valueNode in floatsNode.SelectNodes("Value"))
+                        floatStruct.Values.Add(float.Parse(valueNode.InnerText));
+                }
 
                 byte[] bytes = File.ReadAllBytes($"{sourceDir}\\{name}.dds");
-                tpf.Textures.Add(new TPF.Texture(name, format, flags1, flags2, bytes));
+                var texture = new TPF.Texture(name, format, flags1, bytes);
+                texture.FloatStruct = floatStruct;
+                tpf.Textures.Add(texture);
             }
 
             string outPath = $"{targetDir}\\{filename}";
