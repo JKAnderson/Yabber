@@ -62,7 +62,8 @@ namespace Yabber
             xml.Load($"{sourceDir}\\_yabber-tpf.xml");
 
             string filename = xml.SelectSingleNode("tpf/filename").InnerText;
-            Enum.TryParse(xml.SelectSingleNode("tpf/compression")?.InnerText ?? "None", out tpf.Compression);
+            Enum.TryParse(xml.SelectSingleNode("tpf/compression")?.InnerText ?? "None", out DCX.Type cmpr);
+            tpf.Compression = cmpr;
             tpf.Encoding = Convert.ToByte(xml.SelectSingleNode("tpf/encoding").InnerText, 16);
             tpf.Flag2 = Convert.ToByte(xml.SelectSingleNode("tpf/flag2").InnerText, 16);
 

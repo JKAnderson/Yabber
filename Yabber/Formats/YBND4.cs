@@ -37,7 +37,8 @@ namespace Yabber
             xml.Load($"{sourceDir}\\_yabber-bnd4.xml");
 
             string filename = xml.SelectSingleNode("bnd4/filename").InnerText;
-            Enum.TryParse(xml.SelectSingleNode("bnd4/compression")?.InnerText ?? "None", out bnd.Compression);
+            Enum.TryParse(xml.SelectSingleNode("bnd4/compression")?.InnerText ?? "None", out DCX.Type cmpr);
+            bnd.Compression = cmpr;
             bnd.Version = xml.SelectSingleNode("bnd4/version").InnerText;
             bnd.Format = (Binder.Format)Enum.Parse(typeof(Binder.Format), xml.SelectSingleNode("bnd4/format").InnerText);
             bnd.BigEndian = bool.Parse(xml.SelectSingleNode("bnd4/bigendian").InnerText);

@@ -112,7 +112,8 @@ namespace Yabber
             var gparam = new GPARAM();
             var xml = new XmlDocument();
             xml.Load(sourceFile);
-            Enum.TryParse(xml.SelectSingleNode("gparam/compression")?.InnerText ?? "None", out gparam.Compression);
+            Enum.TryParse(xml.SelectSingleNode("gparam/compression")?.InnerText ?? "None", out DCX.Type cmpr);
+            gparam.Compression = cmpr;
             Enum.TryParse(xml.SelectSingleNode("gparam/game").InnerText, out gparam.Game);
             gparam.Unk0D = bool.Parse(xml.SelectSingleNode("gparam/unk0D").InnerText);
             gparam.Unk14 = int.Parse(xml.SelectSingleNode("gparam/unk14").InnerText);
