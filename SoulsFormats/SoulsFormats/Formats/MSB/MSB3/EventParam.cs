@@ -475,13 +475,13 @@ namespace SoulsFormats
                 /// <summary>
                 /// Regions that enemies can be spawned at.
                 /// </summary>
-                public string[] SpawnPointNames { get; private set; }
+                public string[] SpawnPointNames { get; set; }
                 private int[] SpawnPointIndices;
 
                 /// <summary>
                 /// Enemies spawned by this generator.
                 /// </summary>
-                public string[] SpawnPartNames { get; private set; }
+                public string[] SpawnPartNames { get; set; }
                 private int[] SpawnPartIndices;
 
                 /// <summary>
@@ -842,7 +842,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// List of points in the route.
                 /// </summary>
-                public string[] WalkPointNames { get; private set; }
+                public string[] WalkPointNames { get; set; }
                 private short[] WalkPointIndices;
 
                 /// <summary>
@@ -916,7 +916,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public string[] GroupPartsNames { get; private set; }
+                public string[] GroupPartsNames { get; set; }
                 private int[] GroupPartsIndices;
 
                 /// <summary>
