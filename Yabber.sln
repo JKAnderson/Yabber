@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yabber.DCX", "Yabber.DCX\Ya
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yabber.Context", "Yabber.Context\Yabber.Context.csproj", "{A67A63D3-7C41-4127-93C9-F7C71471D26B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoulsFormats", "..\SoulsFormats\SoulsFormats\SoulsFormats.csproj", "{E6064585-8742-44A9-AFBC-75288AD42527}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoulsFormats", "SoulsFormats\SoulsFormats\SoulsFormats.csproj", "{E6064585-8742-44A9-AFBC-75288AD42527}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

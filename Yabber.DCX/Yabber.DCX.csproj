@@ -58,7 +58,7 @@
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\SoulsFormats\SoulsFormats\SoulsFormats.csproj">
+    <ProjectReference Include="..\SoulsFormats\SoulsFormats\SoulsFormats.csproj">
       <Project>{e6064585-8742-44a9-afbc-75288ad42527}</Project>
       <Name>SoulsFormats</Name>
     </ProjectReference>
