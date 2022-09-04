@@ -168,6 +168,13 @@ namespace Yabber
                     gparam.Compression = compression;
                     gparam.Unpack(sourceFile);
                 }
+                else if (MSB3.Is(bytes))
+                {
+                    Console.WriteLine($"Unpacking MSB3: {filename}...");
+                    MSB3 msb = MSB3.Read(bytes);
+                    msb.Compression = compression;
+                    msb.Unpack(sourceFile);
+                }
                 else if (TPF.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking TPF: {filename}...");
@@ -270,6 +277,17 @@ namespace Yabber
                 {
                     Console.WriteLine($"Repacking GPARAM: {filename}...");
                     YGPARAM.Repack(sourceFile);
+                }
+                else if (MSB3.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking MSB3: {filename}...");
+                    MSB3 msb = MSB3.Read(sourceFile);
+                    msb.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".msb.json") || sourceFile.EndsWith(".msb.dcx.json"))
+                {
+                    Console.WriteLine($"Repacking MSB3: {filename}...");
+                    YMSB3.Repack(sourceFile);
                 }
                 else if (sourceFile.EndsWith(".luagnl"))
                 {
