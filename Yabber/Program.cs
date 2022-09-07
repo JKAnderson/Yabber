@@ -175,6 +175,13 @@ namespace Yabber
                     msb.Compression = compression;
                     msb.Unpack(sourceFile);
                 }
+                else if (sourceFile.EndsWith(".btl.dcx"))
+                {
+                    Console.WriteLine($"Unpacking BTL: {filename}...");
+                    BTL btl = BTL.Read(bytes);
+                    btl.Compression = compression;
+                    btl.Unpack(sourceFile);
+                }
                 else if (TPF.Is(bytes))
                 {
                     Console.WriteLine($"Unpacking TPF: {filename}...");
@@ -288,6 +295,17 @@ namespace Yabber
                 {
                     Console.WriteLine($"Repacking MSB3: {filename}...");
                     YMSB3.Repack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".btl"))
+                {
+                    Console.WriteLine($"Unpacking BTL: {filename}...");
+                    BTL btl = BTL.Read(sourceFile);
+                    btl.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".btl.json") || sourceFile.EndsWith(".btl.dcx.json"))
+                {
+                    Console.WriteLine($"Repacking BTL: {filename}...");
+                    YBTL.Repack(sourceFile);
                 }
                 else if (sourceFile.EndsWith(".luagnl"))
                 {
