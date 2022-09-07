@@ -13,10 +13,7 @@ namespace Yabber
     {
         public static void Unpack(this MSB3 msb, string sourceFile)
         {
-            if (File.Exists(sourceFile) && !File.Exists(sourceFile + ".bak"))
-                File.Copy(sourceFile, sourceFile + ".bak");
-
-            string output = JsonConvert.SerializeObject(msb.Parts, Formatting.Indented);
+            string output = JsonConvert.SerializeObject(msb, Formatting.Indented);
 
             File.WriteAllText($"{sourceFile}.json", output);
         }
@@ -31,16 +28,10 @@ namespace Yabber
             else
                 throw new InvalidOperationException("Invalid MSB3 json filename.");
 
-            string bakPath = outPath + ".bak";
-
-            if (!File.Exists(bakPath))
-                throw new InvalidOperationException("Missing .msb.bak file.");
+            YBUtil.Backup(outPath);
 
             string input = File.ReadAllText(sourceFile);
-            var parts = JsonConvert.DeserializeObject<MSB3.PartsParam>(input);
-
-            var msb = MSB3.Read(bakPath);
-            msb.Parts = parts;
+            var msb = JsonConvert.DeserializeObject<MSB3>(input);
 
             msb.Write(outPath);
         }
