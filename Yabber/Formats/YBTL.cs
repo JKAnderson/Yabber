@@ -13,10 +13,6 @@ namespace Yabber
     {
         public static void Unpack(this BTL btl, string sourceFile)
         {
-            /* if (File.Exists(sourceFile) && !File.Exists(sourceFile + ".bak")) */
-            /*     File.Copy(sourceFile, sourceFile + ".bak"); */
-
-            /* string output = JsonConvert.SerializeObject(btl.Parts, Formatting.Indented); */
             string output = JsonConvert.SerializeObject(btl, Formatting.Indented);
 
             File.WriteAllText($"{sourceFile}.json", output);
@@ -31,17 +27,6 @@ namespace Yabber
                 outPath = sourceFile.Replace(".btl.dcx.json", ".btl.dcx");
             else
                 throw new InvalidOperationException("Invalid BTL json filename.");
-
-            /* string bakPath = outPath + ".bak"; */
-
-            /* if (!File.Exists(bakPath)) */
-            /*     throw new InvalidOperationException("Missing .btl.bak file."); */
-
-            /* string input = File.ReadAllText(sourceFile); */
-            /* var parts = JsonConvert.DeserializeObject<BTL.PartsParam>(input); */
-
-            /* var btl = BTL.Read(bakPath); */
-            /* btl.Parts = parts; */
 
             string input = File.ReadAllText(sourceFile);
             var btl = JsonConvert.DeserializeObject<BTL>(input);
