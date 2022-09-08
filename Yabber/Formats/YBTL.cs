@@ -13,9 +13,7 @@ namespace Yabber
     {
         public static void Unpack(this BTL btl, string sourceFile)
         {
-            string output = JsonConvert.SerializeObject(btl, Formatting.Indented);
-
-            File.WriteAllText($"{sourceFile}.json", output);
+            File.WriteAllText($"{sourceFile}.json", YBUtil.JsonSerialize(btl));
         }
 
         public static void Repack(string sourceFile)
@@ -28,11 +26,8 @@ namespace Yabber
             else
                 throw new InvalidOperationException("Invalid BTL json filename.");
 
-            string input = File.ReadAllText(sourceFile);
-            var btl = JsonConvert.DeserializeObject<BTL>(input);
-
             YBUtil.Backup(outPath);
-            btl.Write(outPath);
+            YBUtil.JsonDeserialize<BTL>(File.ReadAllText(sourceFile)).Write(outPath);
         }
     }
 }

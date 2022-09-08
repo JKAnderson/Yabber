@@ -13,9 +13,7 @@ namespace Yabber
     {
         public static void Unpack(this MSB3 msb, string sourceFile)
         {
-            string output = JsonConvert.SerializeObject(msb, Formatting.Indented);
-
-            File.WriteAllText($"{sourceFile}.json", output);
+            File.WriteAllText($"{sourceFile}.json", YBUtil.JsonSerialize(msb));
         }
 
         public static void Repack(string sourceFile)
@@ -29,11 +27,7 @@ namespace Yabber
                 throw new InvalidOperationException("Invalid MSB3 json filename.");
 
             YBUtil.Backup(outPath);
-
-            string input = File.ReadAllText(sourceFile);
-            var msb = JsonConvert.DeserializeObject<MSB3>(input);
-
-            msb.Write(outPath);
+            YBUtil.JsonDeserialize<MSB3>(File.ReadAllText(sourceFile)).Write(outPath);
         }
     }
 }

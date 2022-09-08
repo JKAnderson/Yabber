@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace Yabber
 {
@@ -92,6 +93,20 @@ namespace Yabber
         {
             if (File.Exists(path) && !File.Exists(path + ".bak"))
                 File.Move(path, path + ".bak");
+        }
+
+        public static string JsonSerialize(object obj)
+        {
+            return JsonConvert.SerializeObject(obj, Formatting.Indented, new JsonSerializerSettings {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+        }
+
+        public static T JsonDeserialize<T>(string text)
+        {
+            return JsonConvert.DeserializeObject<T>(text, new JsonSerializerSettings {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
         }
     }
 }
