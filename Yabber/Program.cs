@@ -331,6 +331,28 @@ namespace Yabber
                     Console.WriteLine($"Repacking GPARAM: {filename}...");
                     YGPARAM.Repack(sourceFile);
                 }
+                else if (sourceFile.EndsWith(".matbin"))
+                {
+                    Console.WriteLine($"Unpacking MATBIN: {filename}...");
+                    MATBIN matbin = MATBIN.Read(sourceFile);
+                    matbin.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".matbin.json"))
+                {
+                    Console.WriteLine($"Repacking MATBIN: {filename}...");
+                    YMATBIN.Repack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".mtd"))
+                {
+                    Console.WriteLine($"Unpacking MTD: {filename}...");
+                    MTD mtd = MTD.Read(sourceFile);
+                    mtd.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".mtd.json"))
+                {
+                    Console.WriteLine($"Repacking MTD: {filename}...");
+                    YMTD.Repack(sourceFile);
+                }
                 else if (sourceFile.EndsWith(".msb"))
                 {
 

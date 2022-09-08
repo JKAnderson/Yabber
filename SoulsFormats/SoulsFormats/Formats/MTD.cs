@@ -265,13 +265,13 @@ namespace SoulsFormats
                         bw.WriteInt32(valueCount);
 
                         if (Type == ParamType.Int)
-                            bw.WriteInt32((int)Value);
+                            bw.WriteInt32((int)(long)Value);
                         else if (Type == ParamType.Int2)
                             bw.WriteInt32s((int[])Value);
                         else if (Type == ParamType.Bool)
                             bw.WriteBoolean((bool)Value);
                         else if (Type == ParamType.Float)
-                            bw.WriteSingle((float)Value);
+                            bw.WriteSingle((float)(double)Value);
                         else if (Type == ParamType.Float2)
                             bw.WriteSingles((float[])Value);
                         else if (Type == ParamType.Float3)

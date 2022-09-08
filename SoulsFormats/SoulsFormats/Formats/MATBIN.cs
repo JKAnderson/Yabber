@@ -248,9 +248,9 @@ namespace SoulsFormats
                 {
                     // These assume that the arrays are the correct length, which it probably shouldn't.
                     case ParamType.Bool: bw.WriteBoolean((bool)Value); break;
-                    case ParamType.Int: bw.WriteInt32((int)Value); break;
+                    case ParamType.Int: bw.WriteInt32((int)(long)Value); break;
                     case ParamType.Int2: bw.WriteInt32s((int[])Value); break;
-                    case ParamType.Float: bw.WriteSingle((float)Value); break;
+                    case ParamType.Float: bw.WriteSingle((float)(double)Value); break;
                     case ParamType.Float2:
                     case ParamType.Float4:
                     case ParamType.Float5: bw.WriteSingles((float[])Value); break;
