@@ -338,7 +338,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Other regions referenced by this shape.
                 /// </summary>
-                public Child[] Children { get; set; }
+                public Child[] Children { get; private set; }
 
                 /// <summary>
                 /// Creates a Composite with 8 empty references.
@@ -394,6 +394,7 @@ namespace SoulsFormats
                     /// <summary>
                     /// The name of the child region.
                     /// </summary>
+                    [MSBReference(ReferenceType = typeof(IMsbRegion))]
                     public string RegionName { get; set; }
                     private int RegionIndex;
 

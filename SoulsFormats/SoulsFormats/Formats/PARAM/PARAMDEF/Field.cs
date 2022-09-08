@@ -43,9 +43,24 @@ namespace SoulsFormats
             u32,
 
             /// <summary>
+            /// 4-byte integer representing a boolean.
+            /// </summary>
+            b32,
+
+            /// <summary>
             /// Single-precision floating point value.
             /// </summary>
             f32,
+
+            /// <summary>
+            /// Single-precision floating point value representing an angle.
+            /// </summary>
+            angle32,
+
+            /// <summary>
+            /// Double-precision floating point value.
+            /// </summary>
+            f64,
 
             /// <summary>
             /// Byte or array of bytes used for padding or placeholding.
@@ -91,6 +106,11 @@ namespace SoulsFormats
         public class Field
         {
             /// <summary>
+            /// Owning PARAMDEF
+            /// </summary>
+            public PARAMDEF Parent { get; }
+
+            /// <summary>
             /// Name to display in the editor.
             /// </summary>
             public string DisplayName { get; set; }
@@ -108,22 +128,22 @@ namespace SoulsFormats
             /// <summary>
             /// Default value for new rows.
             /// </summary>
-            public float Default { get; set; }
+            public object Default { get; set; }
 
             /// <summary>
             /// Minimum valid value.
             /// </summary>
-            public float Minimum { get; set; }
+            public object Minimum { get; set; }
 
             /// <summary>
             /// Maximum valid value.
             /// </summary>
-            public float Maximum { get; set; }
+            public object Maximum { get; set; }
 
             /// <summary>
             /// Amount of increase or decrease per step when scrolling in the editor.
             /// </summary>
-            public float Increment { get; set; }
+            public object Increment { get; set; }
 
             /// <summary>
             /// Flags determining behavior of the field in the editor.
@@ -181,19 +201,21 @@ namespace SoulsFormats
             /// <summary>
             /// Creates a Field with placeholder values.
             /// </summary>
-            public Field() : this(DefType.f32, "placeholder") { }
+            public Field() : this(null, DefType.f32, "placeholder") { }
 
             /// <summary>
             /// Creates a Field with the given type, name, and appropriate default values.
             /// </summary>
-            public Field(DefType displayType, string internalName)
+            public Field(PARAMDEF def, DefType displayType, string internalName)
             {
+                Parent = def;
                 DisplayName = internalName;
                 DisplayType = displayType;
                 DisplayFormat = ParamUtil.GetDefaultFormat(DisplayType);
-                Minimum = ParamUtil.GetDefaultMinimum(DisplayType);
-                Maximum = ParamUtil.GetDefaultMaximum(DisplayType);
-                Increment = ParamUtil.GetDefaultIncrement(DisplayType);
+                Default = ParamUtil.GetDefaultDefault(def, DisplayType);
+                Minimum = ParamUtil.GetDefaultMinimum(def, DisplayType);
+                Maximum = ParamUtil.GetDefaultMaximum(def, DisplayType);
+                Increment = ParamUtil.GetDefaultIncrement(def, DisplayType);
                 EditFlags = ParamUtil.GetDefaultEditFlags(DisplayType);
                 ArrayLength = 1;
                 InternalType = DisplayType.ToString();
@@ -203,8 +225,9 @@ namespace SoulsFormats
 
             internal Field(BinaryReaderEx br, PARAMDEF def)
             {
-                if (def.FormatVersion >= 202)
-                    DisplayName = br.GetUTF16(br.ReadInt64());
+                Parent = def;
+                if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
+                    DisplayName = br.GetUTF16(br.ReadVarint());
                 else if (def.Unicode)
                     DisplayName = br.ReadFixStrW(0x40);
                 else
@@ -212,10 +235,19 @@ namespace SoulsFormats
 
                 DisplayType = (DefType)Enum.Parse(typeof(DefType), br.ReadFixStr(8));
                 DisplayFormat = br.ReadFixStr(8);
-                Default = br.ReadSingle();
-                Minimum = br.ReadSingle();
-                Maximum = br.ReadSingle();
-                Increment = br.ReadSingle();
+
+                if (def.FormatVersion >= 203)
+                {
+                    br.AssertPattern(0x10, 0x00);
+                }
+                else
+                {
+                    Default = br.ReadSingle();
+                    Minimum = br.ReadSingle();
+                    Maximum = br.ReadSingle();
+                    Increment = br.ReadSingle();
+                }
+
                 EditFlags = (EditFlags)br.ReadInt32();
 
                 int byteCount = br.ReadInt32();
@@ -224,22 +256,25 @@ namespace SoulsFormats
                     throw new InvalidDataException($"Unexpected byte count {byteCount} for type {DisplayType}.");
                 ArrayLength = byteCount / ParamUtil.GetValueSize(DisplayType);
 
-                long descriptionOffset;
-                if (def.FormatVersion >= 200)
-                    descriptionOffset = br.ReadInt64();
-                else
-                    descriptionOffset = br.ReadInt32();
+                long descriptionOffset = br.ReadVarint();
+                if (descriptionOffset != 0)
+                {
+                    if (def.Unicode)
+                        Description = br.GetUTF16(descriptionOffset);
+                    else
+                        Description = br.GetShiftJIS(descriptionOffset);
+                }
 
-                if (def.FormatVersion >= 202)
-                    InternalType = br.GetASCII(br.ReadInt64()).Trim();
+                if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
+                    InternalType = br.GetASCII(br.ReadVarint()).Trim();
                 else
                     InternalType = br.ReadFixStr(0x20).Trim();
 
                 BitSize = -1;
                 if (def.FormatVersion >= 102)
                 {
-                    if (def.FormatVersion >= 202)
-                        InternalName = br.GetASCII(br.ReadInt64()).Trim();
+                    if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
+                        InternalName = br.GetASCII(br.ReadVarint()).Trim();
                     else
                         InternalName = br.ReadFixStr(0x20).Trim();
 
@@ -278,47 +313,98 @@ namespace SoulsFormats
                     if (unkC8Offset != 0)
                         UnkC8 = br.GetUTF16(unkC8Offset);
                 }
-
-                if (descriptionOffset != 0)
+                else if (def.FormatVersion >= 106)
                 {
-                    if (def.Unicode)
-                        Description = br.GetUTF16(descriptionOffset);
-                    else
-                        Description = br.GetShiftJIS(descriptionOffset);
+                    br.AssertInt32(0);
+                    br.AssertInt32(0);
+                    br.AssertInt32(0);
+                }
+
+                if (def.FormatVersion >= 203)
+                {
+                    object readVariableValue()
+                    {
+                        object value;
+                        switch (DisplayType)
+                        {
+                            case DefType.s8:
+                            case DefType.u8:
+                            case DefType.s16:
+                            case DefType.u16:
+                            case DefType.s32:
+                            case DefType.u32:
+                            case DefType.b32:
+                                value = br.ReadInt32();
+                                br.AssertInt32(0);
+                                break;
+
+                            case DefType.f32:
+                            case DefType.angle32:
+                                value = br.ReadSingle();
+                                br.AssertInt32(0);
+                                break;
+
+                            case DefType.f64:
+                                value = br.ReadDouble();
+                                break;
+
+                            // Given that there are 8 bytes available, these could possibly be offsets
+                            case DefType.dummy8:
+                            case DefType.fixstr:
+                            case DefType.fixstrW:
+                                value = null;
+                                br.AssertInt64(0);
+                                break;
+
+                            default:
+                                throw new NotImplementedException($"Missing variable read for type: {DisplayType}");
+                        }
+                        return value;
+                    }
+
+                    Default = readVariableValue();
+                    Minimum = readVariableValue();
+                    Maximum = readVariableValue();
+                    Increment = readVariableValue();
                 }
             }
 
             internal void Write(BinaryWriterEx bw, PARAMDEF def, int index)
             {
-                if (def.FormatVersion >= 202)
-                    bw.ReserveInt64($"DisplayNameOffset{index}");
+                if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
+                    bw.ReserveVarint($"DisplayNameOffset{index}");
                 else if (def.Unicode)
                     bw.WriteFixStrW(DisplayName, 0x40, (byte)(def.FormatVersion >= 104 ? 0x00 : 0x20));
                 else
                     bw.WriteFixStr(DisplayName, 0x40, (byte)(def.FormatVersion >= 104 ? 0x00 : 0x20));
 
-                byte padding = (byte)(def.FormatVersion >= 200 ? 0x00 : 0x20);
+                byte padding = (byte)(def.FormatVersion >= 106 ? 0x00 : 0x20);
                 bw.WriteFixStr(DisplayType.ToString(), 8, padding);
                 bw.WriteFixStr(DisplayFormat, 8, padding);
-                bw.WriteSingle(Default);
-                bw.WriteSingle(Minimum);
-                bw.WriteSingle(Maximum);
-                bw.WriteSingle(Increment);
+
+                if (def.FormatVersion >= 203)
+                {
+                    bw.WritePattern(0x10, 0x00);
+                }
+                else
+                {
+                    bw.WriteSingle(Convert.ToSingle(Default));
+                    bw.WriteSingle(Convert.ToSingle(Minimum));
+                    bw.WriteSingle(Convert.ToSingle(Maximum));
+                    bw.WriteSingle(Convert.ToSingle(Increment));
+                }
+
                 bw.WriteInt32((int)EditFlags);
                 bw.WriteInt32(ParamUtil.GetValueSize(DisplayType) * (ParamUtil.IsArrayType(DisplayType) ? ArrayLength : 1));
+                bw.ReserveVarint($"DescriptionOffset{index}");
 
-                if (def.FormatVersion >= 200)
-                    bw.ReserveInt64($"DescriptionOffset{index}");
-                else
-                    bw.ReserveInt32($"DescriptionOffset{index}");
-
-                if (def.FormatVersion >= 202)
-                    bw.ReserveInt64($"InternalTypeOffset{index}");
+                if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
+                    bw.ReserveVarint($"InternalTypeOffset{index}");
                 else
                     bw.WriteFixStr(InternalType, 0x20, padding);
 
-                if (def.FormatVersion >= 202)
-                    bw.ReserveInt64($"InternalNameOffset{index}");
+                if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
+                    bw.ReserveVarint($"InternalNameOffset{index}");
                 else if (def.FormatVersion >= 102)
                     bw.WriteFixStr(MakeInternalName(), 0x20, padding);
 
@@ -332,13 +418,63 @@ namespace SoulsFormats
                     bw.ReserveInt64($"UnkC0Offset{index}");
                     bw.ReserveInt64($"UnkC8Offset{index}");
                 }
+                else if (def.FormatVersion >= 106)
+                {
+                    bw.WriteInt32(0);
+                    bw.WriteInt32(0);
+                    bw.WriteInt32(0);
+                }
+
+                if (def.FormatVersion >= 203)
+                {
+                    void writeVariableValue(object value)
+                    {
+                        switch (DisplayType)
+                        {
+                            case DefType.s8:
+                            case DefType.u8:
+                            case DefType.s16:
+                            case DefType.u16:
+                            case DefType.s32:
+                            case DefType.u32:
+                            case DefType.b32:
+                                bw.WriteInt32(Convert.ToInt32(value));
+                                bw.WriteInt32(0);
+                                break;
+
+                            case DefType.f32:
+                            case DefType.angle32:
+                                bw.WriteSingle(Convert.ToSingle(value));
+                                bw.WriteInt32(0);
+                                break;
+
+                            case DefType.f64:
+                                bw.WriteDouble(Convert.ToDouble(value));
+                                break;
+
+                            case DefType.dummy8:
+                            case DefType.fixstr:
+                            case DefType.fixstrW:
+                                bw.WriteInt64(0);
+                                break;
+
+                            default:
+                                throw new NotImplementedException($"Missing variable write for type: {DisplayType}");
+                        }
+                    }
+
+                    writeVariableValue(Default);
+                    writeVariableValue(Minimum);
+                    writeVariableValue(Maximum);
+                    writeVariableValue(Increment);
+                }
             }
 
             internal void WriteStrings(BinaryWriterEx bw, PARAMDEF def, int index, Dictionary<string, long> sharedStringOffsets)
             {
-                if (def.FormatVersion >= 202)
+                if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
                 {
-                    bw.FillInt64($"DisplayNameOffset{index}", bw.Position);
+                    bw.FillVarint($"DisplayNameOffset{index}", bw.Position);
                     bw.WriteUTF16(DisplayName, true);
                 }
 
@@ -351,18 +487,14 @@ namespace SoulsFormats
                     else
                         bw.WriteShiftJIS(Description, true);
                 }
+                bw.FillVarint($"DescriptionOffset{index}", descriptionOffset);
 
-                if (def.FormatVersion >= 200)
-                    bw.FillInt64($"DescriptionOffset{index}", descriptionOffset);
-                else
-                    bw.FillInt32($"DescriptionOffset{index}", (int)descriptionOffset);
-
-                if (def.FormatVersion >= 202)
+                if (def.FormatVersion >= 202 || def.FormatVersion >= 106 && def.FormatVersion < 200)
                 {
-                    bw.FillInt64($"InternalTypeOffset{index}", bw.Position);
+                    bw.FillVarint($"InternalTypeOffset{index}", bw.Position);
                     bw.WriteASCII(InternalType, true);
 
-                    bw.FillInt64($"InternalNameOffset{index}", bw.Position);
+                    bw.FillVarint($"InternalNameOffset{index}", bw.Position);
                     bw.WriteASCII(MakeInternalName(), true);
                 }
 

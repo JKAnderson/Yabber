@@ -14,8 +14,10 @@ namespace SoulsFormats
             if (br.Stream.Length < 4)
                 return false;
 
+            byte b0 = br.GetByte(0);
+            byte b1 = br.GetByte(1);
             string magic = br.GetASCII(0, 4);
-            return magic == "DCP\0" || magic == "DCX\0";
+            return magic == "DCP\0" || magic == "DCX\0" || b0 == 0x78 && (b1 == 0x01 || b1 == 0x5E || b1 == 0x9C || b1 == 0xDA);
         }
 
         /// <summary>
@@ -107,29 +109,19 @@ namespace SoulsFormats
                 {
                     int unk04 = br.GetInt32(0x4);
                     int unk10 = br.GetInt32(0x10);
-                    int unk30 = br.GetInt32(0x30);
-                    if (unk10 == 0x24)
-                    {
+                    byte unk30 = br.GetByte(0x30);
+                    byte unk38 = br.GetByte(0x38);
+
+                    if (unk04 == 0x10000 && unk10 == 0x24 && unk30 == 9 && unk38 == 0)
                         type = Type.DCX_DFLT_10000_24_9;
-                    }
-                    else if (unk10 == 0x44)
-                    {
-                        if (unk04 == 0x10000)
-                        {
+                    else if (unk04 == 0x10000 && unk10 == 0x44 && unk30 == 9 && unk38 == 0)
                             type = Type.DCX_DFLT_10000_44_9;
-                        }
-                        else if (unk04 == 0x11000)
-                        {
-                            if (unk30 == 0x8000000)
-                            {
+                    else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 8 && unk38 == 0)
                                 type = Type.DCX_DFLT_11000_44_8;
-                            }
-                            else if (unk30 == 0x9000000)
-                            {
+                    else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 9 && unk38 == 0)
                                 type = Type.DCX_DFLT_11000_44_9;
-                            }
-                        }
-                    }
+                    else if (unk04 == 0x11000 && unk10 == 0x44 && unk30 == 9 && unk38 == 15)
+                        type = Type.DCX_DFLT_11000_44_9_15;
                 }
                 else if (format == "KRAK")
                 {
@@ -155,7 +147,11 @@ namespace SoulsFormats
                 return DecompressDCPDFLT(br);
             else if (type == Type.DCX_EDGE)
                 return DecompressDCXEDGE(br);
-            else if (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9)
+            else if (type == Type.DCX_DFLT_10000_24_9
+                || type == Type.DCX_DFLT_10000_44_9
+                || type == Type.DCX_DFLT_11000_44_8
+                || type == Type.DCX_DFLT_11000_44_9
+                || type == Type.DCX_DFLT_11000_44_9_15)
                 return DecompressDCXDFLT(br, type);
             else if (type == Type.DCX_KRAK)
                 return DecompressDCXKRAK(br);
@@ -320,30 +316,18 @@ namespace SoulsFormats
 
         private static byte[] DecompressDCXDFLT(BinaryReaderEx br, Type type)
         {
+            int unk04 = (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9) ? 0x10000 : 0x11000;
+            int unk10 = type == Type.DCX_DFLT_10000_24_9 ? 0x24 : 0x44;
+            int unk14 = type == Type.DCX_DFLT_10000_24_9 ? 0x2C : 0x4C;
+            byte unk30 = (byte)(type == Type.DCX_DFLT_11000_44_8 ? 8 : 9);
+            byte unk38 = (byte)(type == Type.DCX_DFLT_11000_44_9_15 ? 15 : 0);
+
             br.AssertASCII("DCX\0");
-
-            if (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9)
-            {
-                br.AssertInt32(0x10000);
-            }
-            else if (type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9)
-            {
-                br.AssertInt32(0x11000);
-            }
-
+            br.AssertInt32(unk04);
             br.AssertInt32(0x18);
             br.AssertInt32(0x24);
-
-            if (type == Type.DCX_DFLT_10000_24_9)
-            {
-                br.AssertInt32(0x24);
-                br.AssertInt32(0x2C);
-            }
-            else if (type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9)
-            {
-                br.AssertInt32(0x44);
-                br.AssertInt32(0x4C);
-            }
+            br.AssertInt32(unk10);
+            br.AssertInt32(unk14);
 
             br.AssertASCII("DCS\0");
             int uncompressedSize = br.ReadInt32();
@@ -352,18 +336,15 @@ namespace SoulsFormats
             br.AssertASCII("DCP\0");
             br.AssertASCII("DFLT");
             br.AssertInt32(0x20);
-
-            if (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_9)
-            {
-                br.AssertInt32(0x9000000);
-            }
-            else if (type == Type.DCX_DFLT_11000_44_8)
-            {
-                br.AssertInt32(0x8000000);
-            }
-
+            br.AssertByte(unk30);
+            br.AssertByte(0);
+            br.AssertByte(0);
+            br.AssertByte(0);
             br.AssertInt32(0x0);
-            br.AssertInt32(0x0);
+            br.AssertByte(unk38);
+            br.AssertByte(0);
+            br.AssertByte(0);
+            br.AssertByte(0);
             br.AssertInt32(0x0);
             // These look suspiciously like flags
             br.AssertInt32(0x00010100);
@@ -434,7 +415,11 @@ namespace SoulsFormats
                 CompressDCPDFLT(data, bw);
             else if (type == Type.DCX_EDGE)
                 CompressDCXEDGE(data, bw);
-            else if (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9)
+            else if (type == Type.DCX_DFLT_10000_24_9
+                || type == Type.DCX_DFLT_10000_44_9
+                || type == Type.DCX_DFLT_11000_44_8
+                || type == Type.DCX_DFLT_11000_44_9
+                || type == Type.DCX_DFLT_11000_44_9_15)
                 CompressDCXDFLT(data, bw, type);
             else if (type == Type.DCX_KRAK)
                 CompressDCXKRAK(data, bw);
@@ -561,7 +546,7 @@ namespace SoulsFormats
             {
                 bw.WriteInt32(0x10000);
             }
-            else if (type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9)
+            else if (type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9 || type == Type.DCX_DFLT_11000_44_9_15)
             {
                 bw.WriteInt32(0x11000);
             }
@@ -574,7 +559,7 @@ namespace SoulsFormats
                 bw.WriteInt32(0x24);
                 bw.WriteInt32(0x2C);
             }
-            else if (type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9)
+            else if (type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_8 || type == Type.DCX_DFLT_11000_44_9 || type == Type.DCX_DFLT_11000_44_9_15)
             {
                 bw.WriteInt32(0x44);
                 bw.WriteInt32(0x4C);
@@ -587,17 +572,32 @@ namespace SoulsFormats
             bw.WriteASCII("DFLT");
             bw.WriteInt32(0x20);
 
-            if (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_9)
+            if (type == Type.DCX_DFLT_10000_24_9 || type == Type.DCX_DFLT_10000_44_9 || type == Type.DCX_DFLT_11000_44_9 || type == Type.DCX_DFLT_11000_44_9_15)
             {
-                bw.WriteInt32(0x9000000);
+                bw.WriteByte(9);
             }
             else if (type == Type.DCX_DFLT_11000_44_8)
             {
-                bw.WriteInt32(0x8000000);
+                bw.WriteByte(8);
             }
+            bw.WriteByte(0);
+            bw.WriteByte(0);
+            bw.WriteByte(0);
 
             bw.WriteInt32(0);
-            bw.WriteInt32(0);
+
+            if (type == Type.DCX_DFLT_11000_44_9_15)
+            {
+                bw.WriteByte(15);
+            }
+            else
+            {
+                bw.WriteByte(0);
+            }
+            bw.WriteByte(0);
+            bw.WriteByte(0);
+            bw.WriteByte(0);
+
             bw.WriteInt32(0);
             bw.WriteInt32(0x00010100);
             bw.WriteASCII("DCA\0");
@@ -691,6 +691,11 @@ namespace SoulsFormats
             DCX_DFLT_11000_44_9,
 
             /// <summary>
+            /// DCX header, deflate compression. Used in the ER regulation.
+            /// </summary>
+            DCX_DFLT_11000_44_9_15,
+
+            /// <summary>
             /// DCX header, Oodle compression. Used in Sekiro.
             /// </summary>
             DCX_KRAK,
@@ -730,6 +735,11 @@ namespace SoulsFormats
             /// Most common compression format for Sekiro.
             /// </summary>
             Sekiro = Type.DCX_KRAK,
+
+            /// <summary>
+            /// Most common compression format for Elden Ring.
+            /// </summary>
+            EldenRing = Type.DCX_KRAK,
         }
     }
 }

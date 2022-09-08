@@ -37,10 +37,15 @@ namespace SoulsFormats
             {
                 ambiguous = false;
                 var nameCounts = new Dictionary<string, int>();
+                
+                // Some entries have blank names but are referenced, which means they all must be
+                // disambiguated.
+                nameCounts[""] = 0;
+                
                 foreach (IMsbEntry entry in entries)
                 {
                     string name = entry.Name;
-                    if (!nameCounts.ContainsKey(name))
+                    if (!nameCounts.ContainsKey(name) && name != "")
                     {
                         nameCounts[name] = 1;
                     }
@@ -78,7 +83,7 @@ namespace SoulsFormats
 
         internal static int FindIndex<T>(List<T> list, string name) where T : IMsbEntry
         {
-            if (name == null)
+            if (name == null || name == "")
             {
                 return -1;
             }

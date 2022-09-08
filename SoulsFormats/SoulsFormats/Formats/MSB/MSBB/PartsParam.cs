@@ -628,10 +628,11 @@ namespace SoulsFormats
                 /// </summary>
                 public sbyte[] EventIDs { get; private set; }
 
+
                 /// <summary>
-                /// Unknown.
+                /// Amount of time it takes for GParam to transition (in seconds). -1 = Some default time.
                 /// </summary>
-                public float Unk40 { get; set; }
+                public float TransitionTime { get; set; }
 
                 /// <summary>
                 /// Creates a SceneGparamConfig with default values.
@@ -661,7 +662,7 @@ namespace SoulsFormats
                     Unk14 = br.ReadInt32();
                     br.AssertPattern(0x24, 0x00);
                     EventIDs = br.ReadSBytes(4);
-                    Unk40 = br.ReadSingle();
+                    TransitionTime = br.ReadSingle();
                     br.AssertInt32(0);
                     br.AssertInt32(0);
                     br.AssertInt32(0);
@@ -677,7 +678,7 @@ namespace SoulsFormats
                     bw.WriteInt32(Unk14);
                     bw.WritePattern(0x24, 0x00);
                     bw.WriteSBytes(EventIDs);
-                    bw.WriteSingle(Unk40);
+                    bw.WriteSingle(TransitionTime);
                     bw.WriteInt32(0);
                     bw.WriteInt32(0);
                     bw.WriteInt32(0);
@@ -749,6 +750,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Collision that controls loading of the object.
                 /// </summary>
+                [MSBReference(ReferenceType = typeof(Collision))]
                 public string CollisionName { get; set; }
                 private int CollisionIndex;
 
@@ -874,11 +876,13 @@ namespace SoulsFormats
                 /// <summary>
                 /// ID in NPCThinkParam determining AI properties.
                 /// </summary>
+                [MSBParamReference(ParamName = "NpcThinkParam")]
                 public int ThinkParamID { get; set; }
 
                 /// <summary>
                 /// ID in NPCParam determining character properties.
                 /// </summary>
+                [MSBParamReference(ParamName = "NpcParam")]
                 public int NPCParamID { get; set; }
 
                 /// <summary>
@@ -889,6 +893,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// ID in CharaInitParam determining equipment and stats for humans.
                 /// </summary>
+                [MSBParamReference(ParamName = "CharaInitParam")]
                 public int CharaInitID { get; set; }
 
                 /// <summary>
@@ -899,6 +904,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Collision that controls loading of the enemy.
                 /// </summary>
+                [MSBReference(ReferenceType = typeof(Collision))]
                 public string CollisionName { get; set; }
                 private int CollisionIndex;
 
@@ -910,6 +916,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Regions for the enemy to patrol.
                 /// </summary>
+                [MSBReference(ReferenceType = typeof(Region))]
                 public string[] MovePointNames { get; private set; }
                 private short[] MovePointIndices;
 
@@ -1259,6 +1266,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// The collision which will load another map.
                 /// </summary>
+                [MSBReference(ReferenceType = typeof(Collision))]
                 public string CollisionName { get; set; }
                 private int CollisionIndex;
 

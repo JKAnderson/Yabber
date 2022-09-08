@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.IO;
 
 namespace SoulsFormats
 {
@@ -54,6 +55,8 @@ namespace SoulsFormats
         /// </summary>
         public SekiroUnkStruct SekiroUnk { get; set; }
 
+        private FlverCache Cache = null;
+
         /// <summary>
         /// Creates a FLVER with a default header and empty lists.
         /// </summary>
@@ -66,6 +69,36 @@ namespace SoulsFormats
             Bones = new List<FLVER.Bone>();
             Meshes = new List<Mesh>();
             BufferLayouts = new List<BufferLayout>();
+        }
+
+        public static FLVER2 Read(byte[] bytes, FlverCache cache)
+        {
+            BinaryReaderEx br = new BinaryReaderEx(false, bytes);
+            FLVER2 file = new FLVER2();
+            file.Cache = cache;
+            DCX.Type ctype;
+            br = SFUtil.GetDecompressedBR(br, out ctype);
+            file.Compression = ctype;
+            file.Read(br);
+            return file;
+        }
+
+        /// <summary>
+        /// Loads a file from the specified path, automatically decompressing it if necessary.
+        /// </summary>
+        public static FLVER2 Read(string path, FlverCache cache)
+        {
+            using (FileStream stream = File.OpenRead(path))
+            {
+                BinaryReaderEx br = new BinaryReaderEx(false, stream);
+                FLVER2 file = new FLVER2();
+                file.Cache = cache;
+                DCX.Type ctype;
+                br = SFUtil.GetDecompressedBR(br, out ctype);
+                file.Compression = ctype;
+                file.Read(br);
+                return file;
+            }
         }
 
         /// <summary>
@@ -88,6 +121,11 @@ namespace SoulsFormats
         /// </summary>
         protected override void Read(BinaryReaderEx br)
         {
+            if (Cache == null)
+            {
+                Cache = new FlverCache();
+            }
+
             br.BigEndian = false;
 
             Header = new FLVERHeader();
@@ -165,7 +203,7 @@ namespace SoulsFormats
 
             var faceSets = new List<FaceSet>(faceSetCount);
             for (int i = 0; i < faceSetCount; i++)
-                faceSets.Add(new FaceSet(br, Header, vertexIndicesSize, dataOffset));
+                faceSets.Add(new FaceSet(br, Header, Cache, vertexIndicesSize, dataOffset));
 
             var vertexBuffers = new List<VertexBuffer>(vertexBufferCount);
             for (int i = 0; i < vertexBufferCount; i++)
@@ -196,7 +234,7 @@ namespace SoulsFormats
             {
                 mesh.TakeFaceSets(faceSetDict);
                 mesh.TakeVertexBuffers(vertexBufferDict, BufferLayouts);
-                mesh.ReadVertices(br, dataOffset, BufferLayouts, Header);
+                mesh.ReadVertices(br, dataOffset, BufferLayouts, Header, Cache);
             }
             if (faceSetDict.Count != 0)
                 throw new NotSupportedException("Orphaned face sets found.");
@@ -228,7 +266,7 @@ namespace SoulsFormats
             int totalFaceCount = 0;
             foreach (Mesh mesh in Meshes)
             {
-                bool allowPrimitiveRestarts = mesh.Vertices.Count < ushort.MaxValue;
+                bool allowPrimitiveRestarts = mesh.Vertices.Length < ushort.MaxValue;
                 foreach (FaceSet faceSet in mesh.FaceSets)
                 {
                     faceSet.AddFaceCounts(allowPrimitiveRestarts, ref trueFaceCount, ref totalFaceCount);
@@ -305,7 +343,7 @@ namespace SoulsFormats
             foreach (Mesh mesh in Meshes)
             {
                 for (int i = 0; i < mesh.VertexBuffers.Count; i++)
-                    mesh.VertexBuffers[i].Write(bw, Header, vertexBufferIndex + i, i, BufferLayouts, mesh.Vertices.Count);
+                    mesh.VertexBuffers[i].Write(bw, Header, vertexBufferIndex + i, i, BufferLayouts, mesh.Vertices.Length);
                 vertexBufferIndex += mesh.VertexBuffers.Count;
             }
 

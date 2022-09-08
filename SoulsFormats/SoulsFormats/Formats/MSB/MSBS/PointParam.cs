@@ -672,6 +672,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// References to other regions used to build a composite shape.
                 /// </summary>
+                [MSBReference(ReferenceType = typeof(Region))]
                 public string[] ChildRegionNames { get; private set; }
                 private int[] ChildRegionIndices;
 
@@ -792,6 +793,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Reference to a WindArea region.
                 /// </summary>
+                [MSBReference(ReferenceType = typeof(Region))]
                 public string WindAreaName { get; set; }
                 private int WindAreaIndex;
 
@@ -959,14 +961,14 @@ namespace SoulsFormats
                 private protected override bool HasTypeData => true;
 
                 /// <summary>
-                /// Unknown.
+                /// Distance from camera required before enabling envmap. 0 = always enabled.
                 /// </summary>
-                public float UnkT00 { get; set; }
+                public float EnableDist { get; set; }
 
                 /// <summary>
-                /// Unknown.
+                /// Distance it takes for an envmap to fully transition into view.
                 /// </summary>
-                public float Compare { get; set; }
+                public float TransitionDist { get; set; }
 
                 /// <summary>
                 /// Unknown.
@@ -1007,8 +1009,8 @@ namespace SoulsFormats
 
                 private protected override void ReadTypeData(BinaryReaderEx br)
                 {
-                    UnkT00 = br.ReadSingle();
-                    Compare = br.ReadSingle();
+                    EnableDist = br.ReadSingle();
+                    TransitionDist = br.ReadSingle();
                     UnkT08 = br.ReadByte();
                     UnkT09 = br.ReadByte();
                     UnkT0A = br.ReadInt16();
@@ -1021,8 +1023,8 @@ namespace SoulsFormats
 
                 private protected override void WriteTypeData(BinaryWriterEx bw)
                 {
-                    bw.WriteSingle(UnkT00);
-                    bw.WriteSingle(Compare);
+                    bw.WriteSingle(EnableDist);
+                    bw.WriteSingle(TransitionDist);
                     bw.WriteByte(UnkT08);
                     bw.WriteByte(UnkT09);
                     bw.WriteInt16(UnkT0A);
