@@ -213,12 +213,12 @@ namespace SoulsFormats
             /// <summary>
             /// Controls when the part is visible.
             /// </summary>
-            public uint[] DrawGroups { get; private set; }
+            public uint[] DrawGroups { get; set; }
 
             /// <summary>
             /// Controls when the part is visible.
             /// </summary>
-            public uint[] DispGroups { get; private set; }
+            public uint[] DispGroups { get; set; }
 
             /// <summary>
             /// Identifies the part in external files.
@@ -648,7 +648,7 @@ namespace SoulsFormats
                 /// Regions for the enemy to patrol.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] MovePointNames { get; private set; }
+                public string[] MovePointNames { get; set; }
                 private short[] MovePointIndices;
 
                 /// <summary>
@@ -821,12 +821,12 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public uint[] NvmGroups { get; private set; }
+                public uint[] NvmGroups { get; set; }
 
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public short[] RefTexIDs { get; private set; }
+                public short[] RefTexIDs { get; set; }
 
                 /// <summary>
                 /// Unknown.
@@ -1023,7 +1023,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public uint[] NvmGroups { get; private set; }
+                public uint[] NvmGroups { get; set; }
 
                 /// <summary>
                 /// Creates a Navmesh with default values.
@@ -1108,7 +1108,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Four bytes specifying the map ID to load.
                 /// </summary>
-                public byte[] MapID { get; private set; }
+                public byte[] MapID { get; set; }
 
                 /// <summary>
                 /// Creates a ConnectCollision with default values.

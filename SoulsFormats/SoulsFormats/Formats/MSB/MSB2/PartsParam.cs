@@ -148,7 +148,7 @@ namespace SoulsFormats
             /// <summary>
             /// Not confirmed; determines when the part is loaded.
             /// </summary>
-            public uint[] DrawGroups { get; private set; }
+            public uint[] DrawGroups { get; set; }
 
             /// <summary>
             /// Unknown; possibly nvm groups.
@@ -173,7 +173,7 @@ namespace SoulsFormats
             /// <summary>
             /// Not confirmed; determines when the part is visible.
             /// </summary>
-            public uint[] DispGroups { get; private set; }
+            public uint[] DispGroups { get; set; }
 
             /// <summary>
             /// Unknown.
@@ -689,7 +689,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// The map to load when on this collision.
                 /// </summary>
-                public byte[] MapID { get; private set; }
+                public byte[] MapID { get; set; }
 
                 /// <summary>
                 /// Unknown.

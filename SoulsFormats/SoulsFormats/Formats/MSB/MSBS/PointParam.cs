@@ -673,7 +673,7 @@ namespace SoulsFormats
                 /// References to other regions used to build a composite shape.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] ChildRegionNames { get; private set; }
+                public string[] ChildRegionNames { get; set; }
                 private int[] ChildRegionIndices;
 
                 /// <summary>

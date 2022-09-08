@@ -535,14 +535,14 @@ namespace SoulsFormats
                 /// </summary>
 
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] SpawnRegionNames { get; private set; }
+                public string[] SpawnRegionNames { get; set; }
                 private int[] SpawnRegionIndices;
 
                 /// <summary>
                 /// Parts that will be respawned.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part))]
-                public string[] SpawnPartNames { get; private set; }
+                public string[] SpawnPartNames { get; set; }
                 private int[] SpawnPartIndices;
 
                 /// <summary>
@@ -765,7 +765,7 @@ namespace SoulsFormats
                 /// Unknown.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] WalkRegionNames { get; private set; }
+                public string[] WalkRegionNames { get; set; }
                 private short[] WalkRegionIndices;
 
                 /// <summary>
@@ -927,7 +927,7 @@ namespace SoulsFormats
                 /// Unknown.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part))]
-                public string[] GroupPartNames { get; private set; }
+                public string[] GroupPartNames { get; set; }
                 private int[] GroupPartIndices;
 
                 /// <summary>
@@ -1115,7 +1115,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public string[] Event21PartNames { get; private set; }
+                public string[] Event21PartNames { get; set; }
                 private int[] Event21PartIndices;
 
                 /// <summary>
@@ -1190,13 +1190,13 @@ namespace SoulsFormats
                 /// Unknown.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part.EnemyBase))]
-                public string[] EnemyNames { get; private set; }
+                public string[] EnemyNames { get; set; }
                 private int[] EnemyIndices;
 
                 /// <summary>
                 /// IDs of talk ESDs.
                 /// </summary>
-                public int[] TalkIDs { get; private set; }
+                public int[] TalkIDs { get; set; }
 
                 /// <summary>
                 /// Unknown.

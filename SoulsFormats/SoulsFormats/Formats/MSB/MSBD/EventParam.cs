@@ -519,7 +519,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Five ItemLotParam IDs.
                 /// </summary>
-                public int[] ItemLots { get; private set; }
+                public int[] ItemLots { get; set; }
 
                 /// <summary>
                 /// Creates a Treasure with default values.
@@ -624,14 +624,14 @@ namespace SoulsFormats
                 /// Points that enemies may be spawned at.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] SpawnPointNames { get; private set; }
+                public string[] SpawnPointNames { get; set; }
                 private int[] SpawnPointIndices;
 
                 /// <summary>
                 /// Enemies to be respawned.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part))]
-                public string[] SpawnPartNames { get; private set; }
+                public string[] SpawnPartNames { get; set; }
                 private int[] SpawnPartIndices;
 
                 /// <summary>

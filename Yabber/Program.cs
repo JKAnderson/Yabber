@@ -168,12 +168,58 @@ namespace Yabber
                     gparam.Compression = compression;
                     gparam.Unpack(sourceFile);
                 }
-                else if (MSB3.Is(bytes))
+                else if (sourceFile.EndsWith(".msb.dcx"))
                 {
-                    Console.WriteLine($"Unpacking MSB3: {filename}...");
-                    MSB3 msb = MSB3.Read(bytes);
-                    msb.Compression = compression;
-                    msb.Unpack(sourceFile);
+                    Console.WriteLine($"Unpacking MSB: {filename}...");
+
+                    if (File.Exists($"{sourceDir}\\_er"))
+                    {
+                        var msb = MSBE.Read(bytes);
+                        msb.Compression = compression;
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_sekiro"))
+                    {
+                        var msb = MSBS.Read(bytes);
+                        msb.Compression = compression;
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_bb"))
+                    {
+                        var msb = MSBB.Read(bytes);
+                        msb.Compression = compression;
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_des"))
+                    {
+                        var msb = MSBD.Read(bytes);
+                        msb.Compression = compression;
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds3"))
+                    {
+                        var msb = MSB3.Read(bytes);
+                        msb.Compression = compression;
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds2"))
+                    {
+                        var msb = MSB2.Read(bytes);
+                        msb.Compression = compression;
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds1"))
+                    {
+                        var msb = MSB1.Read(bytes);
+                        msb.Compression = compression;
+                        msb.Unpack(sourceFile);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Create a file with name corresponding to the game.");
+                        Console.WriteLine($"Valid names: _er, _sekiro, _bb, _des, _ds3, _ds2, _ds1");
+                        return true;
+                    }
                 }
                 else if (sourceFile.EndsWith(".btl.dcx"))
                 {
@@ -285,16 +331,91 @@ namespace Yabber
                     Console.WriteLine($"Repacking GPARAM: {filename}...");
                     YGPARAM.Repack(sourceFile);
                 }
-                else if (MSB3.Is(sourceFile))
+                else if (sourceFile.EndsWith(".msb"))
                 {
-                    Console.WriteLine($"Unpacking MSB3: {filename}...");
-                    MSB3 msb = MSB3.Read(sourceFile);
-                    msb.Unpack(sourceFile);
+
+                    Console.WriteLine($"Unpacking MSB: {filename}...");
+
+                    if (File.Exists($"{sourceDir}\\_er"))
+                    {
+                        var msb = MSBE.Read(sourceFile);
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_sekiro"))
+                    {
+                        var msb = MSBS.Read(sourceFile);
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_bb"))
+                    {
+                        var msb = MSBB.Read(sourceFile);
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_des"))
+                    {
+                        var msb = MSBD.Read(sourceFile);
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds3"))
+                    {
+                        var msb = MSB3.Read(sourceFile);
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds2"))
+                    {
+                        var msb = MSB2.Read(sourceFile);
+                        msb.Unpack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds1"))
+                    {
+                        var msb = MSB1.Read(sourceFile);
+                        msb.Unpack(sourceFile);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Create a file with name corresponding to the game.");
+                        Console.WriteLine($"Valid names: _er, _sekiro, _bb, _des, _ds3, _ds2, _ds1");
+                        return true;
+                    }
                 }
                 else if (sourceFile.EndsWith(".msb.json") || sourceFile.EndsWith(".msb.dcx.json"))
                 {
-                    Console.WriteLine($"Repacking MSB3: {filename}...");
-                    YMSB3.Repack(sourceFile);
+                    Console.WriteLine($"Repacking MSB: {filename}...");
+
+                    if (File.Exists($"{sourceDir}\\_er"))
+                    {
+                        YMSBE.Repack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_sekiro"))
+                    {
+                        YMSBS.Repack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_bb"))
+                    {
+                        YMSBB.Repack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_des"))
+                    {
+                        YMSBD.Repack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds3"))
+                    {
+                        YMSB3.Repack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds2"))
+                    {
+                        YMSB2.Repack(sourceFile);
+                    }
+                    else if (File.Exists($"{sourceDir}\\_ds1"))
+                    {
+                        YMSB1.Repack(sourceFile);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Create a file with name corresponding to the game.");
+                        Console.WriteLine($"Valid names: _er, _sekiro, _bb, _des, _ds3, _ds2, _ds1");
+                        return true;
+                    }
                 }
                 else if (sourceFile.EndsWith(".btl"))
                 {

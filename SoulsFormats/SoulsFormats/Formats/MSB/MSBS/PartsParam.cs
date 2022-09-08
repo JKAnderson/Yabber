@@ -299,7 +299,7 @@ namespace SoulsFormats
             /// <summary>
             /// Allows multiple parts to be identified by the same entity ID.
             /// </summary>
-            public int[] EntityGroupIDs { get; private set; }
+            public int[] EntityGroupIDs { get; set; }
 
             /// <summary>
             /// Unknown.
@@ -635,7 +635,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public uint[] CollisionMask { get; private set; }
+                public uint[] CollisionMask { get; set; }
 
                 /// <summary>
                 /// Unknown.
@@ -699,7 +699,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public int[] DispGroups { get; private set; }
+                public int[] DispGroups { get; set; }
 
                 /// <summary>
                 /// Unknown.
@@ -821,7 +821,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public sbyte[] EventIDs { get; private set; }
+                public sbyte[] EventIDs { get; set; }
 
                 /// <summary>
                 /// Amount of time it takes for GParam to transition (in seconds). -1 = Some default time.
@@ -1772,7 +1772,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// The map to load when on this collision.
                 /// </summary>
-                public byte[] MapID { get; private set; }
+                public byte[] MapID { get; set; }
 
                 /// <summary>
                 /// Creates a ConnectCollision with default values.

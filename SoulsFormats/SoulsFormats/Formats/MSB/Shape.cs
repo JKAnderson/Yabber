@@ -338,7 +338,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Other regions referenced by this shape.
                 /// </summary>
-                public Child[] Children { get; private set; }
+                public Child[] Children { get; set; }
 
                 /// <summary>
                 /// Creates a Composite with 8 empty references.

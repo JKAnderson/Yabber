@@ -734,14 +734,14 @@ namespace SoulsFormats
                 /// Points that enemies may be spawned at.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] SpawnPointNames { get; private set; }
+                public string[] SpawnPointNames { get; set; }
                 private int[] SpawnPointIndices;
 
                 /// <summary>
                 /// Enemies to be respawned.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part))]
-                public string[] SpawnPartNames { get; private set; }
+                public string[] SpawnPartNames { get; set; }
                 private int[] SpawnPartIndices;
 
                 /// <summary>
@@ -1248,7 +1248,7 @@ namespace SoulsFormats
                 /// List of points in the route.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] WalkPointNames { get; private set; }
+                public string[] WalkPointNames { get; set; }
                 private short[] WalkPointIndices;
 
                 /// <summary>
@@ -1356,7 +1356,7 @@ namespace SoulsFormats
                 /// Unknown.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part))]
-                public string[] GroupPartsNames { get; private set; }
+                public string[] GroupPartsNames { get; set; }
                 private int[] GroupPartsIndices;
 
                 /// <summary>

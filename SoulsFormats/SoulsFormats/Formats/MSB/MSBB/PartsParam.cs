@@ -227,17 +227,17 @@ namespace SoulsFormats
             /// <summary>
             /// Controls when the part is visible.
             /// </summary>
-            public uint[] DrawGroups { get; private set; }
+            public uint[] DrawGroups { get; set; }
 
             /// <summary>
             /// Controls when the part is visible.
             /// </summary>
-            public uint[] DispGroups { get; private set; }
+            public uint[] DispGroups { get; set; }
 
             /// <summary>
             /// Unknown.
             /// </summary>
-            public uint[] BackreadGroups { get; private set; }
+            public uint[] BackreadGroups { get; set; }
 
             /// <summary>
             /// Identifies the part in external files.
@@ -626,7 +626,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public sbyte[] EventIDs { get; private set; }
+                public sbyte[] EventIDs { get; set; }
 
 
                 /// <summary>
@@ -777,12 +777,12 @@ namespace SoulsFormats
                 /// <summary>
                 /// Automatically playing animations; only the first is actually used, according to Pav.
                 /// </summary>
-                public short[] AnimIDs { get; private set; }
+                public short[] AnimIDs { get; set; }
 
                 /// <summary>
                 /// Value added to the base ModelSfxParam ID; only the first is actually used, according to Pav.
                 /// </summary>
-                public short[] ModelSfxParamRelativeIDs { get; private set; }
+                public short[] ModelSfxParamRelativeIDs { get; set; }
 
                 private protected ObjectBase() : base("oXXXXXX_XXXX")
                 {
@@ -917,7 +917,7 @@ namespace SoulsFormats
                 /// Regions for the enemy to patrol.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] MovePointNames { get; private set; }
+                public string[] MovePointNames { get; set; }
                 private short[] MovePointIndices;
 
                 /// <summary>
@@ -1273,7 +1273,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Four bytes specifying the map ID to load.
                 /// </summary>
-                public byte[] MapID { get; private set; }
+                public byte[] MapID { get; set; }
 
                 /// <summary>
                 /// Creates a ConnectCollision with default values.

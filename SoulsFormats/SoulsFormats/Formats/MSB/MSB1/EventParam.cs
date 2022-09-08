@@ -559,7 +559,7 @@ namespace SoulsFormats
                 /// Item lots to be granted when the treasure is picked up; only the first appears to be functional.
                 /// </summary>
                 [MSBParamReference(ParamName = "ItemLotParam")]
-                public int[] ItemLots { get; private set; }
+                public int[] ItemLots { get; set; }
 
                 /// <summary>
                 /// Changes the text of the pickup prompt.
@@ -680,14 +680,14 @@ namespace SoulsFormats
                 /// Points that enemies may be spawned at.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Region))]
-                public string[] SpawnPointNames { get; private set; }
+                public string[] SpawnPointNames { get; set; }
                 private int[] SpawnPointIndices;
 
                 /// <summary>
                 /// Enemies to be respawned.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part))]
-                public string[] SpawnPartNames { get; private set; }
+                public string[] SpawnPartNames { get; set; }
                 private int[] SpawnPartIndices;
 
                 /// <summary>

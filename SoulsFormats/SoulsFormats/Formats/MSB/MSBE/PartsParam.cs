@@ -303,7 +303,7 @@ namespace SoulsFormats
             /// <summary>
             /// Allows multiple parts to be identified by the same entity ID.
             /// </summary>
-            public int[] EntityGroupIDs { get; private set; }
+            public int[] EntityGroupIDs { get; set; }
 
             /// <summary>
             /// Unknown.
@@ -743,17 +743,17 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public uint[] DisplayGroups { get; private set; }
+                public uint[] DisplayGroups { get; set; }
 
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public uint[] DrawGroups { get; private set; }
+                public uint[] DrawGroups { get; set; }
 
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public uint[] CollisionMask { get; private set; }
+                public uint[] CollisionMask { get; set; }
 
                 /// <summary>
                 /// Unknown.
@@ -853,7 +853,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// Unknown.
                 /// </summary>
-                public int[] DispGroups { get; private set; }
+                public int[] DispGroups { get; set; }
 
                 /// <summary>
                 /// Unknown.
@@ -2230,7 +2230,7 @@ namespace SoulsFormats
                 /// <summary>
                 /// The map to load when on this collision.
                 /// </summary>
-                public byte[] MapID { get; private set; }
+                public byte[] MapID { get; set; }
 
                 /// <summary>
                 /// Unknown.
@@ -2435,7 +2435,7 @@ namespace SoulsFormats
                 /// Unknown.
                 /// </summary>
                 [MSBReference(ReferenceType = typeof(Part))]
-                public string[] UnkPartNames { get; private set; }
+                public string[] UnkPartNames { get; set; }
                 private int[] UnkPartIndices;
 
                 /// <summary>
