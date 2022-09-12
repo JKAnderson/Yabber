@@ -168,6 +168,13 @@ namespace Yabber
                     gparam.Compression = compression;
                     gparam.Unpack(sourceFile);
                 }
+                else if (FXR3.Is(bytes))
+                {
+                    Console.WriteLine($"Unpacking FXR3: {filename}...");
+                    FXR3 fxr = FXR3.Read(bytes);
+                    fxr.Compression = compression;
+                    fxr.Unpack(sourceFile);
+                }
                 else if (sourceFile.EndsWith(".msb.dcx"))
                 {
                     Console.WriteLine($"Unpacking MSB: {filename}...");
@@ -330,6 +337,17 @@ namespace Yabber
                 {
                     Console.WriteLine($"Repacking GPARAM: {filename}...");
                     YGPARAM.Repack(sourceFile);
+                }
+                else if (FXR3.Is(sourceFile))
+                {
+                    Console.WriteLine($"Unpacking FXR3: {filename}...");
+                    FXR3 fxr = FXR3.Read(sourceFile);
+                    fxr.Unpack(sourceFile);
+                }
+                else if (sourceFile.EndsWith(".fxr.json") || sourceFile.EndsWith(".fxr.dcx.xml"))
+                {
+                    Console.WriteLine($"Repacking FXR3: {filename}...");
+                    YFXR3.Repack(sourceFile);
                 }
                 else if (sourceFile.EndsWith(".matbin"))
                 {
